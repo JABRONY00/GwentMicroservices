@@ -1,0 +1,640 @@
+package engine
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"math"
+	"math/rand"
+	"os"
+	"slices"
+	"sort"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+func NewTable(dbPool *pgxpool.Pool, client1 Client, client2 Client) *Table {
+	t := new(Table)
+	t.TableID = uuid.New().String()
+	t.Db = dbPool
+	t.PlayerA.Name = client1.Name
+	t.PlayerA.Conn = client1.Conn
+	t.PlayerB.Name = client2.Name
+	t.PlayerB.Conn = client2.Conn
+	t.PlayerA.WinTokens = 2
+	t.PlayerB.WinTokens = 2
+
+	t.PlayerA.Fields = make(map[string]*GameField)
+	t.PlayerA.Fields = map[string]*GameField{
+		Field.Assault: &t.PlayerA.AssaultField,
+		Field.Distant: &t.PlayerA.DistantField,
+		Field.Siege:   &t.PlayerA.SiegeField,
+	}
+	t.PlayerB.Fields = make(map[string]*GameField)
+	t.PlayerB.Fields = map[string]*GameField{
+		Field.Assault: &t.PlayerB.AssaultField,
+		Field.Distant: &t.PlayerB.DistantField,
+		Field.Siege:   &t.PlayerB.SiegeField,
+	}
+	t.Players = make(map[string]*PlayerField)
+	t.Players = map[string]*PlayerField{
+		t.PlayerA.Name: &t.PlayerA,
+		t.PlayerB.Name: &t.PlayerB,
+	}
+	return t
+}
+
+func (t *Table) InitTable() {
+	//QUERY cards
+	sort.SliceStable(t.ActiveCards,
+		func(i, j int) bool { return t.ActiveCards[i].ID < t.ActiveCards[j].ID })
+	t.StartStack()
+	t.PlayerA.StartHand()
+	t.PlayerB.StartHand()
+
+	r := rand.New(rand.NewSource(time.Now().UnixMilli()))
+	switch r.Intn(2) {
+	case 0:
+		{
+			t.Pm.ActPlr = t.PlayerA.Name
+			t.Pm.PasPlr = t.PlayerB.Name
+		}
+	case 1:
+		{
+			t.Pm.ActPlr = t.PlayerB.Name
+			t.Pm.PasPlr = t.PlayerA.Name
+		}
+	}
+	t.Pm.Instr = Instr.ForbMove
+	t.Pm.IDs = t.Players[t.Pm.ActPlr].GetIDsHand()
+	t.Players[t.Pm.ActPlr].Conn.Mut.Lock()
+	t.Players[t.Pm.ActPlr].Conn.WriteJSON("Game is running")
+	t.Players[t.Pm.ActPlr].Conn.WriteJSON(ResponseData{Instr: Instr.Move, Data: t.Pm.IDs})
+	t.Players[t.Pm.ActPlr].Conn.Mut.Unlock()
+	t.Players[t.Pm.PasPlr].Conn.Mut.Lock()
+	t.Players[t.Pm.PasPlr].Conn.WriteJSON("Game is running")
+	t.Players[t.Pm.PasPlr].Conn.WriteJSON(ResponseData{Instr: Instr.Wait})
+	t.Players[t.Pm.PasPlr].Conn.Mut.Unlock()
+}
+
+func (t *Table) EndGame() {
+	t.PlayerA.Conn.Mut.Lock()
+	t.PlayerA.Conn.WriteJSON(ResponseData{Instr: "end-game"})
+	t.PlayerA.Conn.Mut.Unlock()
+	t.PlayerB.Conn.Mut.Lock()
+	t.PlayerB.Conn.WriteJSON(ResponseData{Instr: "end-game"})
+	t.PlayerB.Conn.Mut.Unlock()
+	if t.Winner != "" {
+		t.Players[t.Winner].Conn.Mut.Lock()
+		t.Players[t.Winner].Conn.WriteJSON("You Win")
+		t.Players[t.Winner].Conn.Mut.Unlock()
+	}
+	if t.PlayerA.Name != t.Winner {
+		t.PlayerA.Conn.Mut.Lock()
+		t.PlayerA.Conn.WriteJSON("You Lose")
+		t.PlayerA.Conn.Mut.Unlock()
+	}
+	if t.PlayerB.Name != t.Winner {
+		t.PlayerB.Conn.Mut.Lock()
+		t.PlayerB.Conn.WriteJSON("You Lose")
+		t.PlayerB.Conn.Mut.Unlock()
+	}
+}
+
+func (t *Table) EndRound() {
+	if t.Winner != t.PlayerA.Name {
+		t.PlayerA.WinTokens--
+	}
+	if t.Winner != t.PlayerB.Name {
+		t.PlayerB.WinTokens--
+	}
+	t.WeatherFlags.Frost = false
+	t.WeatherFlags.Fog = false
+	t.WeatherFlags.Rain = false
+	/*t.PlayerA.EndRound()
+	t.PlayerB.EndRound()*/
+	switch {
+	case t.PlayerA.WinTokens == 0:
+		fallthrough
+	case t.PlayerB.WinTokens == 0:
+		{
+			t.EndGame()
+		}
+	}
+}
+
+func (t *Table) Pass() {
+	if t.Players[t.Pm.PasPlr].PassFlag {
+		t.EndRound()
+	}
+	t.PermissionSwitch()
+	t.Players[t.Pm.PasPlr].PassFlag = true
+}
+
+func (t *Table) StartStack() {
+	for i := range t.ActiveCards {
+		t.ActiveCards[i].Score = t.ActiveCards[i].Cost
+		switch {
+		case t.ActiveCards[i].Role == "leader":
+			{
+				if t.ActiveCards[i].ID < 200 {
+					t.PlayerA.LeaderCard = &t.ActiveCards[i]
+				} else {
+					t.PlayerB.LeaderCard = &t.ActiveCards[i]
+				}
+			}
+		default:
+			{
+				if t.ActiveCards[i].ID < 200 {
+					t.PlayerA.Stack = append(t.PlayerA.Stack, &t.ActiveCards[i])
+				} else {
+					t.PlayerB.Stack = append(t.PlayerB.Stack, &t.ActiveCards[i])
+				}
+			}
+		}
+	}
+}
+
+func (pf *PlayerField) StartHand() {
+	switch {
+	default:
+		{
+			pf.PutRandCardFromStackToHand(10)
+		}
+	}
+
+	sort.SliceStable(pf.Hand,
+		func(i, j int) bool { return pf.Hand[i].Score < pf.Hand[j].Score })
+}
+
+func (pf *PlayerField) GetStartCards(koef uint, preset []uint, source string) []Card {
+	var (
+		all      []Card
+		newstack []Card
+	)
+	storage, err := os.OpenFile(source, os.O_RDONLY, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer storage.Close()
+	decoder := json.NewDecoder(storage)
+	err = decoder.Decode(&all)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, card := range all {
+		if slices.Contains(preset, card.ID) {
+			card.ID += koef
+			newstack = append(newstack, card)
+		}
+	}
+	return newstack
+}
+
+/////////////////////////////////////
+/////////////////////////////////////
+
+func (t *Table) CardByID(id uint) *Card {
+	if id == 0 {
+		return nil
+	}
+	leftside := 0
+	rightside := len(t.ActiveCards) - 1
+	for leftside <= rightside {
+		middle := (leftside + rightside) / 2
+		if t.ActiveCards[middle].ID == id {
+			return (&t.ActiveCards[middle])
+		} else {
+			if t.ActiveCards[middle].ID < id {
+				leftside = middle + 1
+			} else {
+				rightside = middle - 1
+			}
+		}
+	}
+	return nil
+}
+
+func (t *Table) PermissionSwitch() {
+	if !t.Players[t.Pm.PasPlr].PassFlag {
+		buf := t.Pm.ActPlr
+		t.Pm.ActPlr = t.Pm.PasPlr
+		t.Pm.PasPlr = buf
+	}
+	t.Pm.IDs = t.Players[t.Pm.ActPlr].GetIDsHand()
+	t.Pm.Instr = Instr.Move
+}
+
+////////////////////////////
+////////////////////////////
+
+func (t *Table) TableScoreCounter() {
+	t.MaxCardScore = 0
+	t.Players[t.Pm.ActPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	t.Players[t.Pm.PasPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	if t.Players[t.Pm.ActPlr].MaxCardScore > t.Players[t.Pm.PasPlr].MaxCardScore {
+		t.MaxCardScore = t.Players[t.Pm.ActPlr].MaxCardScore
+	} else {
+		t.MaxCardScore = t.Players[t.Pm.PasPlr].MaxCardScore
+	}
+	switch {
+	case int(t.Players[t.Pm.ActPlr].Score-t.Players[t.Pm.PasPlr].Score) > 0:
+		{
+			t.Winner = t.Pm.ActPlr
+		}
+	case int(t.Players[t.Pm.ActPlr].Score-t.Players[t.Pm.PasPlr].Score) < 0:
+		{
+			t.Winner = t.Pm.PasPlr
+		}
+	case t.PlayerA.Score-t.PlayerB.Score == 0:
+		{
+			t.Winner = "None"
+			if t.Players[t.Pm.ActPlr].Race == Race.Nilf && t.Players[t.Pm.ActPlr].Race != t.Players[t.Pm.PasPlr].Race {
+				t.Winner = t.Pm.ActPlr
+			}
+			if t.Players[t.Pm.PasPlr].Race == Race.Nilf && t.Players[t.Pm.PasPlr].Race != t.Players[t.Pm.ActPlr].Race {
+				t.Winner = t.Pm.PasPlr
+			}
+		}
+	}
+}
+
+func (pf *PlayerField) PlayerFieldScoreCounter(frost bool, fog bool, rain bool) {
+	pf.Fields[Field.Assault].GameFieldBonusCounter(frost)
+	pf.Fields[Field.Distant].GameFieldBonusCounter(fog)
+	pf.Fields[Field.Siege].GameFieldBonusCounter(rain)
+
+	pf.Score = pf.Fields[Field.Assault].GameFieldScoreCounter()
+	pf.Score += pf.Fields[Field.Distant].GameFieldScoreCounter()
+	pf.Score += pf.Fields[Field.Siege].GameFieldScoreCounter()
+
+	pf.MaxCardScore = pf.Fields[Field.Assault].MaxCardScore
+	if pf.MaxCardScore < pf.Fields[Field.Distant].MaxCardScore {
+		pf.MaxCardScore = pf.Fields[Field.Distant].MaxCardScore
+	}
+	if pf.MaxCardScore < pf.Fields[Field.Siege].MaxCardScore {
+		pf.MaxCardScore = pf.Fields[Field.Siege].MaxCardScore
+	}
+}
+
+func (gf *GameField) GameFieldBonusCounter(weather bool) {
+	if weather {
+		gf.ActiveBonuses.Weather = 1
+	} else {
+		gf.ActiveBonuses.Weather = 0
+	}
+	gf.ActiveBonuses.Squads = nil
+	gf.ActiveBonuses.Horn = 0
+	gf.ActiveBonuses.Boost = 0
+	if gf.HornField != nil {
+		gf.ActiveBonuses.Horn = 1
+	}
+	for i := range gf.CardField {
+		if gf.CardField[i].CardBonus.Squad != "" {
+			gf.ActiveBonuses.Squads = append(gf.ActiveBonuses.Squads, gf.CardField[i].CardBonus.Squad)
+		}
+		if gf.CardField[i].CardBonus.Horn {
+			gf.ActiveBonuses.Horn++
+		}
+		if gf.CardField[i].CardBonus.Boost {
+			gf.ActiveBonuses.Boost++
+		}
+	}
+}
+
+func (gf *GameField) GameFieldScoreCounter() uint {
+	gf.MaxCardScore = 0
+	gf.Score = 0
+	squadKoef := 0
+	hornKoef := gf.ActiveBonuses.Horn
+	hornfix := uint(0)
+	weatherfix := uint(0)
+	boostfix := uint(0)
+	switch {
+	case len(gf.CardField) < 1:
+		{
+			return 0
+		}
+	case len(gf.CardField) > 0:
+		{
+			for i := range gf.CardField {
+				if gf.CardField[i].Rareness {
+					gf.CardField[i].Score = gf.CardField[i].Cost
+					gf.Score += gf.CardField[i].Score
+					continue
+				}
+				if gf.CardField[i].CardBonus.Squad != "" {
+					for _, squad := range gf.ActiveBonuses.Squads {
+						if squad == gf.CardField[i].CardBonus.Squad {
+							squadKoef++
+						}
+					}
+				}
+				if gf.CardField[i].Cost == 0 && gf.ActiveBonuses.Weather == 1 {
+					weatherfix = 1
+				}
+				if gf.CardField[i].CardBonus.Horn && gf.HornField == nil && gf.ActiveBonuses.Horn < 2 {
+					hornfix = 1
+				}
+				if hornKoef > 1 {
+					hornKoef = 1
+				}
+				if gf.CardField[i].CardBonus.Boost {
+					boostfix = 1
+				} else {
+					boostfix = 0
+				}
+				gf.CardField[i].Score = ((gf.CardField[i].Cost-gf.ActiveBonuses.Weather*(gf.CardField[i].Cost-1)-weatherfix)*uint(math.Pow(2, float64(squadKoef))) + (gf.ActiveBonuses.Boost - boostfix)) * uint(math.Pow(2, float64(hornKoef-hornfix)))
+				gf.Score += gf.CardField[i].Score
+				if gf.CardField[i].Score > gf.MaxCardScore {
+					gf.MaxCardScore = gf.CardField[i].Score
+				}
+				squadKoef = 0
+				hornfix = 0
+				weatherfix = 0
+				hornKoef = gf.ActiveBonuses.Horn
+			}
+		}
+	}
+	return gf.Score
+}
+
+//////////////////////////
+//////////////////////////
+
+func (pf *PlayerField) PutRandCardFromStackToHand(number uint) {
+	for number != 0 {
+		if len(pf.Stack) < 1 {
+			return
+		}
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		index := r.Intn(len(pf.Stack))
+		pf.Hand = append(pf.Hand, pf.Stack[index])
+		pf.Stack[index] = nil
+		pf.Stack = slices.Delete(pf.Stack, index, index+1)
+		pf.Stack = slices.Clip(pf.Stack)
+		number--
+	}
+	if len(pf.Hand) > 1 {
+		sort.SliceStable(pf.Hand,
+			func(i, j int) bool { return pf.Hand[i].Cost < pf.Hand[j].Cost })
+	}
+}
+
+func (pf *PlayerField) PutCardToGrave(card *Card) {
+	pf.Grave = append(pf.Grave, card)
+	if len(pf.Grave) > 1 {
+		sort.SliceStable(pf.Grave,
+			func(i, j int) bool { return pf.Grave[i].Cost < pf.Grave[j].Cost })
+	}
+}
+
+func (pf *PlayerField) DeleteCardFromGrave(targetID uint) (*Card, error) {
+	for i, card := range pf.Grave {
+		if card.ID == targetID {
+			pf.Grave = slices.Delete(pf.Grave, i, i+1)
+			pf.Grave = slices.Clip(pf.Grave)
+			return card, nil
+		}
+	}
+	return nil, errors.New(Instr.ForbMove)
+}
+
+func (pf *PlayerField) PutCardToHand(card *Card) {
+	pf.Hand = append(pf.Hand, card)
+	if len(pf.Hand) > 1 {
+		sort.SliceStable(pf.Hand,
+			func(i, j int) bool { return pf.Hand[i].Cost < pf.Hand[j].Cost })
+	}
+}
+
+func (pf *PlayerField) DeleteCardFromHand(targetID uint) (*Card, error) {
+	for i, card := range pf.Hand {
+		if card.ID == targetID {
+			pf.Hand = slices.Delete(pf.Hand, i, i+1)
+			pf.Hand = slices.Clip(pf.Hand)
+			return card, nil
+		}
+	}
+	return nil, errors.New(Instr.ForbMove)
+}
+
+func (pf *PlayerField) PutCardOnWeatherField(card *Card) {
+	pf.WeatherField = append(pf.WeatherField, card)
+}
+
+func (pf *PlayerField) DeleteCardFromWeatherField(targetID uint) (*Card, error) {
+	for i, card := range pf.WeatherField {
+		if card.ID == targetID {
+			pf.WeatherField = slices.Delete(pf.WeatherField, i, i+1)
+			pf.WeatherField = slices.Clip(pf.WeatherField)
+			return card, nil
+		}
+	}
+	return nil, errors.New(Instr.ForbMove)
+}
+
+func (pf *PlayerField) PutCardToStack(card *Card) {
+	pf.Stack = append(pf.Stack, card)
+}
+
+func (pf *PlayerField) DeleteCardFromStack(targetID uint) (*Card, error) {
+	for i, card := range pf.Stack {
+		if card.ID == targetID {
+			pf.Stack = slices.Delete(pf.Stack, i, i+1)
+			pf.Stack = slices.Clip(pf.Stack)
+			return card, nil
+		}
+	}
+	return nil, errors.New(Instr.ForbMove)
+}
+
+func (gf *GameField) PutCardOnField(card *Card) {
+	gf.CardField = append(gf.CardField, card)
+	if len(gf.CardField) > 1 {
+		sort.SliceStable(gf.CardField,
+			func(i, j int) bool { return gf.CardField[i].Cost < gf.CardField[j].Cost })
+	}
+}
+
+func (gf *GameField) DeleteCardFromField(targetID uint) (*Card, error) {
+	for i, card := range gf.CardField {
+		if card.ID == targetID {
+			gf.CardField = slices.Delete(gf.CardField, i, i+1)
+			return card, nil
+		}
+	}
+	return nil, errors.New(Instr.ForbMove)
+}
+
+/////////////////
+/////////////////
+
+func (t *Table) Execution(targetfield string) error {
+	switch targetfield {
+	case Field.Assault:
+		fallthrough
+	case Field.Distant:
+		fallthrough
+	case Field.Siege:
+		{
+			executionIDs := t.Players[t.Pm.PasPlr].Fields[targetfield].GetIDsExecution(false, 0)
+			for _, ID := range executionIDs {
+				card, err := t.Players[t.Pm.PasPlr].Fields[targetfield].DeleteCardFromField(ID)
+				if err != nil {
+					return err
+				}
+				t.Players[t.Pm.PasPlr].PutCardToGrave(card)
+			}
+		}
+	default: //Global Execution
+		{
+			if t.PlayerA.MaxCardScore == t.MaxCardScore {
+				t.PlayerA.GlobalExecution(t.MaxCardScore)
+			}
+			if t.PlayerB.MaxCardScore == t.MaxCardScore {
+				t.PlayerB.GlobalExecution(t.MaxCardScore)
+			}
+		}
+	}
+	return nil
+}
+
+func (pf *PlayerField) GlobalExecution(maxScore uint) error {
+	var executionIDs []uint
+	if pf.AssaultField.MaxCardScore == maxScore {
+		executionIDs = pf.AssaultField.GetIDsExecution(true, maxScore)
+		for _, ID := range executionIDs {
+			card, err := pf.AssaultField.DeleteCardFromField(ID)
+			if err != nil {
+				return err
+			}
+			pf.PutCardToGrave(card)
+		}
+	}
+	if pf.DistantField.MaxCardScore == maxScore {
+		executionIDs = pf.DistantField.GetIDsExecution(true, maxScore)
+		for _, ID := range executionIDs {
+			card, err := pf.DistantField.DeleteCardFromField(ID)
+			if err != nil {
+				return err
+			}
+			pf.PutCardToGrave(card)
+		}
+	}
+	if pf.SiegeField.MaxCardScore == maxScore {
+		executionIDs = pf.SiegeField.GetIDsExecution(true, maxScore)
+		for _, ID := range executionIDs {
+			card, err := pf.SiegeField.DeleteCardFromField(ID)
+			if err != nil {
+				return err
+			}
+			pf.PutCardToGrave(card)
+		}
+	}
+	return nil
+}
+
+//////////////////
+//////////////////
+
+func (pf *PlayerField) GetIDsHand() []uint {
+	var returnIDs []uint
+	for _, card := range pf.Hand {
+		returnIDs = append(returnIDs, card.ID)
+	}
+	return returnIDs
+}
+
+func (pf *PlayerField) GetIDsStack() []uint {
+	var returnIDs []uint
+	for _, card := range pf.Stack {
+		returnIDs = append(returnIDs, card.ID)
+	}
+	return returnIDs
+}
+
+func (pf *PlayerField) GetIDsWeather() []uint {
+	var returnIDs []uint
+	for _, card := range pf.WeatherField {
+		returnIDs = append(returnIDs, card.ID)
+	}
+	return returnIDs
+}
+
+func (pf *PlayerField) GetIDsGrave(forHeal bool) []uint {
+	var returnIDs []uint
+	for _, card := range pf.Grave {
+		if forHeal {
+			switch {
+			case card.Rareness:
+				fallthrough
+			case card.Role == Role.Decoy:
+				fallthrough
+			case card.Role == Role.Execution:
+				fallthrough
+			case card.Role == Role.Horn:
+				fallthrough
+			case card.Role == Role.Weather:
+				continue
+			}
+
+		} else {
+			returnIDs = append(returnIDs, card.ID)
+		}
+	}
+	return returnIDs
+}
+
+func (pf *PlayerField) GetIDsLeaderWeather() []uint {
+	var returnIDs []uint
+	for _, card := range pf.Stack {
+		switch pf.LeaderCard.LeaderBonus {
+		case Weather.Frost:
+			fallthrough
+		case Weather.Fog:
+			fallthrough
+		case Weather.Rain:
+			{
+				if card.Name == pf.LeaderCard.LeaderBonus {
+					returnIDs = append(returnIDs, card.ID)
+					break
+				}
+			}
+		default:
+			{
+				if card.Role == Role.Weather {
+					returnIDs = append(returnIDs, card.ID)
+				}
+			}
+		}
+	}
+	return returnIDs
+}
+
+func (gf *GameField) GetIDsExecution(global bool, maxScore uint) []uint {
+	var executionIDs []uint
+	if global {
+		if gf.MaxCardScore < maxScore {
+			return nil
+		}
+		for _, card := range gf.CardField {
+			if card.Score == gf.MaxCardScore && !card.Rareness && card.Role != Role.Decoy {
+				executionIDs = append(executionIDs, card.ID)
+			}
+		}
+		return executionIDs
+	} else {
+		if gf.Score >= 10 {
+			for _, card := range gf.CardField {
+				if card.Score == gf.MaxCardScore && !card.Rareness && card.Role != Role.Decoy {
+					executionIDs = append(executionIDs, card.ID)
+				}
+			}
+			return executionIDs
+		}
+		return nil
+	}
+}
