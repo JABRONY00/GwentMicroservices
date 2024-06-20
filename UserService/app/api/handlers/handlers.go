@@ -1,102 +1,103 @@
 package handlers
 
 import (
+	"GwentMicroservices/UserService/app/api/models"
+	"GwentMicroservices/UserService/app/api/services"
 	"GwentMicroservices/UserService/app/helpers"
-	"GwentMicroservices/UserService/app/helpers/log"
-	"context"
+	log "GwentMicroservices/UserService/app/helpers/log"
 	"net/http"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func UserRegistration(c *gin.Context) {
-	var info UserCredentials
-	err := c.ShouldBindJSON(&info)
+func UserSignUp(c *gin.Context) {
+	var player models.PlayerInfoPassword
+	err := c.ShouldBindJSON(&player)
 	if err != nil {
 		log.HttpLog(c, log.Warn, http.StatusBadRequest, err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Body"})
 		return
 	}
-	dbPool := c.MustGet("dbPool").(*pgxpool.Pool)
+
+	exists, err := services.PlayerExistanceCheck(player.Name)
+	if err != nil {
+		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
 	switch {
-	case !helpers.ValidateName(info.Name, dbPool):
-		fallthrough
-	case !helpers.ValidatePassword(info.Password):
+	case exists:
 		{
-			log.HttpLog(c, log.Warn, http.StatusBadRequest, "Invalid user name or password")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user name or password"})
+			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid name")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "player name is already reserved"})
+			return
+		}
+	case helpers.ValidateEmail(player.Email):
+		{
+			log.HttpLog(c, log.Warn, http.StatusBadRequest, "Invalid email")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
+			return
+		}
+	case helpers.ValidatePassword(player.Password):
+		{
+			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid password")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
 			return
 		}
 	}
-	info.HashedPassword, err = bcrypt.GenerateFromPassword([]byte(info.Password), 14)
+
+	err = services.CreatePlayer(&player)
 	if err != nil {
 		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	_, err = dbPool.Exec(context.Background(), "INSERT INTO players VALUES ($1, $2)", info.Name, info.HashedPassword)
-	if err != nil {
-		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-	log.HttpLog(c, log.Info, http.StatusOK, "new user registrated")
+
+	log.HttpLog(c, log.Info, http.StatusOK, "new user created")
 	c.JSON(http.StatusOK, gin.H{"message": "registrated sucsessfully"})
-	claims := &Claims{
-		StandardClaims: jwt.StandardClaims{
-			Subject:   info.Name,
-			ExpiresAt: time.Now().Add(2 * time.Hour).Unix(),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("gwent"))
+
+	signedString, limit, err := services.CreateToken(player.ID)
 	if err != nil {
 		log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	c.SetCookie("token", tokenString, int(claims.StandardClaims.ExpiresAt), "/", "localhost", false, true)
+	c.SetCookie("token", signedString, limit, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 
 func UserLogin(c *gin.Context) {
-	var userInfo UserCredentials
-	err := c.ShouldBindJSON(&userInfo)
+	var player models.PlayerInfoPassword
+	err := c.ShouldBindJSON(&player)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	dbpool, _ := c.Get("dbpool")
-	db := dbpool.(*pgxpool.Pool)
-	info := db.QueryRow(context.Background(), "SELECT password FROM players WHERE players_name = $1", userInfo.Name)
-	err = info.Scan(&userInfo.HashedPassword)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "invalid user name"})
-		return
+
+	err = services.AuthPlayer(&player)
+	switch {
+	case err.Error() == "bad password":
+		{
+			c.JSON(http.StatusBadRequest, gin.H{"error": "bad password"})
+			return
+		}
+	case err != nil:
+		{
+			log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
 	}
-	err = bcrypt.CompareHashAndPassword(userInfo.HashedPassword, []byte(userInfo.Password))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
-		return
-	}
-	claims := &Claims{
-		StandardClaims: jwt.StandardClaims{
-			Subject:   userInfo.Name,
-			ExpiresAt: time.Now().Add(2 * time.Hour).Unix(),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("gwent"))
+
+	signedString, limit, err := services.CreateToken(player.ID)
 	if err != nil {
 		log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	c.SetCookie("token", tokenString, int(claims.StandardClaims.ExpiresAt), "/", "localhost", false, true)
+
+	c.SetCookie("token", signedString, limit, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GwentMicroservices/UserService/app/api/models"
 	"net/http"
 	"time"
 
@@ -8,10 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
-
-type Claims struct {
-	jwt.StandardClaims
-}
 
 func InitMiddlewares(r *gin.Engine, dbPool *pgxpool.Pool) {
 	r.Use(func(c *gin.Context) {
@@ -33,7 +30,7 @@ func AuthMidlewares() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(cookie, &models.Claims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte("gwent"), nil
 		})
 		if err != nil {
@@ -44,7 +41,7 @@ func AuthMidlewares() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}
-		claims := token.Claims.(*Claims)
+		claims := token.Claims.(*models.Claims)
 		c.Set("player", claims.Subject)
 		c.Next()
 	}

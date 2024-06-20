@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16.1
+    container_name: postgres-db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
+      - postgres_db_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: gwent
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: gwent
+      POSTGRES_PORT: 5432
+    networks:
+      - shared_network
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    ports:
+      - "8888:80"
+    environment:
+      # host.docker.internal instead of localhost while connecting to DB in pgAdmin 
+      PGADMIN_DEFAULT_EMAIL: root@example.com
+      PGADMIN_DEFAULT_PASSWORD: 1234
+    depends_on:
+      - postgres-db
+    volumes:
+      - pgadmin4_volume:/var/lib/pgadmin
+    networks:
+      - shared_network
+
+volumes:
+  postgres_db_volume:
+  pgadmin4_volume:
+
+networks:
+  shared_network:   
+    driver: bridge 
