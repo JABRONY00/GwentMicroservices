@@ -20,13 +20,13 @@ func UserSignUp(c *gin.Context) {
 	}
 
 	exists, err := services.PlayerExistanceCheck(player.Name)
-	if err != nil {
-		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
 	switch {
+	case err != nil:
+		{
+			log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
 	case exists:
 		{
 			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid name")

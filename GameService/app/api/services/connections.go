@@ -1,6 +1,7 @@
-package connections
+package services
 
 import (
+	"GwentMicroservices/GameService/app/api/models"
 	"GwentMicroservices/GameService/app/engine"
 	"encoding/json"
 	"fmt"
@@ -28,7 +29,7 @@ func NewConnection(c *gin.Context) {
 		return
 	}
 	name := c.MustGet("player").(string)
-	ActiveClients.Set(name, Client{
+	ActiveClients.Set(name, models.Client{
 		Name:    name,
 		Conn:    connection,
 		TableID: "",
@@ -38,10 +39,10 @@ func NewConnection(c *gin.Context) {
 	WaitingClients.Set(name, ch)
 }
 
-func WaitingConnection(name string, closer chan bool) {
+func WaitingConnection(name string, matchmakerChan chan bool) {
 	startTime := time.Now()
 	ticker := time.NewTicker(time.Second)
-	stopper := make(chan bool)
+	stopTimer := make(chan bool)
 	client := ActiveClients.Get(name).(engine.Client)
 	client.Conn.Mut.Lock()
 	client.Conn.WriteJSON("Wait for second player")
@@ -49,7 +50,7 @@ func WaitingConnection(name string, closer chan bool) {
 	go func() {
 		for {
 			select {
-			case <-stopper:
+			case <-stopTimer:
 				return
 			case t := <-ticker.C:
 				{
@@ -62,21 +63,23 @@ func WaitingConnection(name string, closer chan bool) {
 	}()
 	for {
 		select {
-		case <-closer:
+		case <-matchmakerChan:
 			{
-				stopper <- true
+				close(matchmakerChan)
+				matchmakerChan = nil
+				stopTimer <- true
 				ticker.Stop()
-				go ReadConnection(name)
 				return
 			}
 		default:
 			{
 				_, _, err := client.Conn.ReadMessage()
 				if err != nil {
-					closer <- true
-					stopper <- true
+					close(matchmakerChan)
+					matchmakerChan = nil
+					stopTimer <- true
 					client.Conn.Close()
-					close(stopper)
+					close(stopTimer)
 					ticker.Stop()
 					return
 				}
@@ -86,7 +89,7 @@ func WaitingConnection(name string, closer chan bool) {
 }
 
 func ReadConnection(player string) {
-	client := ActiveClients.Get(player).(Client)
+	client := ActiveClients.Get(player).(models.Client)
 	defer client.Conn.Close()
 	client.Conn.WriteJSON(engine.ResponseData{Instr: "Game is running..."})
 	for {

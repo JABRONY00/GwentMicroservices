@@ -1,16 +1,10 @@
-package connections
+package models
 
 import (
 	"sync"
 
 	"github.com/gorilla/websocket"
 )
-
-const TablesLimit uint = 5
-
-var ActiveClients ConcMap
-var WaitingClients ConcMap
-var ActiveGameTables ConcMap
 
 type Client struct {
 	Name    string

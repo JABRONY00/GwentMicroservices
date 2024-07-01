@@ -1,14 +1,14 @@
 package initializers
 
 import (
-	"GwentMicroservices/GameService/app/api/connections"
+	"GwentMicroservices/GameService/app/api/services"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func InitGameServer(dbPool *pgxpool.Pool) {
-	connections.ActiveGameTables.Init()
-	connections.ActiveClients.Init()
-	connections.WaitingClients.Init()
-	go connections.MatchMaker(dbPool)
+	services.ActiveGameTables.Init()
+	services.ActiveClients.Init()
+	services.WaitingClients.Init()
+	go services.MatchMaker(dbPool)
 }

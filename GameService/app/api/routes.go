@@ -1,7 +1,7 @@
 package api
 
 import (
-	"GwentMicroservices/GameService/app/api/connections"
+	"GwentMicroservices/GameService/app/api/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -9,6 +9,6 @@ import (
 
 func Routes(r *gin.Engine, dbPool *pgxpool.Pool) {
 	InitMiddlewares(r, dbPool)
-	r.POST("/game/start", connections.NewConnection)
+	r.POST("/game/start", services.NewConnection)
 
 }
