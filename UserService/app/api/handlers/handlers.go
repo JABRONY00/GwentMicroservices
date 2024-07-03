@@ -27,13 +27,13 @@ func UserSignUp(c *gin.Context) {
 
 	err = services.PlayerExistanceCheck(player.Name)
 	switch {
-	case err.Error() == "no rows in result set":
+	case err == nil:
 		{
 			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid name")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "player name is already reserved"})
 			return
 		}
-	case err != nil:
+	case err.Error() != "no rows in result set":
 		{
 			log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
@@ -71,13 +71,17 @@ func UserLogin(c *gin.Context) {
 		fallthrough
 	case player.Password == "":
 		{
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 			return
 		}
 	}
 
 	err = services.AuthPlayer(&player)
 	switch {
+	case err == nil:
+		{
+			break
+		}
 	case err.Error() == "no rows in result set":
 		{
 			c.JSON(http.StatusBadRequest, gin.H{"error": "player does not exist"})
@@ -88,7 +92,7 @@ func UserLogin(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "bad password"})
 			return
 		}
-	case err != nil:
+	default:
 		{
 			log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
