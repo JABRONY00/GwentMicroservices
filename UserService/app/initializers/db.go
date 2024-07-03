@@ -4,8 +4,6 @@ import (
 	"GwentMicroservices/UserService/app/helpers"
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	log "github.com/sirupsen/logrus"
@@ -36,10 +34,10 @@ func DbConnection() *pgxpool.Pool {
 	return pool
 }
 
-func runMigrations() {
+/*func runMigrations() {
 	psqlInfo := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 
-	cmd := exec.Command("migrate", "-path", "db/migrations", "-database", psqlInfo, "up")
+	cmd := exec.Command("migrate", "-path", "//db/migrations", "-database", psqlInfo, "up")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -49,4 +47,4 @@ func runMigrations() {
 	}
 
 	log.Info("Migrations have passed!")
-}
+}*/
