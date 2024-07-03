@@ -3,6 +3,7 @@ package services
 import (
 	"GwentMicroservices/UserService/app/api/models"
 	"GwentMicroservices/UserService/app/api/query"
+	"GwentMicroservices/UserService/app/helpers"
 	"errors"
 	"time"
 
@@ -11,10 +12,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func PlayerExistanceCheck(name string) (bool, error) {
-	exists, err := query.CheckPlayerExists(name)
+func RegistrationInfoValidation(player models.PlayerInfoPassword) error {
 
-	return exists, err
+	switch {
+	case helpers.ValidateEmail(player.Email) != nil:
+		{
+			return errors.New("invalid email")
+		}
+	case helpers.ValidatePassword(player.Password) != nil:
+		{
+			return errors.New("bad password")
+		}
+	}
+	return nil
+}
+
+func PlayerExistanceCheck(name string) error {
+	err := query.CheckPlayerExists(name)
+
+	return err
 }
 
 func CreatePlayer(player *models.PlayerInfoPassword) error {

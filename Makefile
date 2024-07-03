@@ -1,6 +1,6 @@
 # To use env variables from local .env file you need to install
 # npm install -g dotenv-cli  
-include .env
+include 
 export
 
 .PHONY: help
@@ -33,8 +33,8 @@ db: # Stop docker containers
 
 .PHONY: migrate postgresql up
 migrateup: # migrate postgresql up
-	migrate -path ./db/migrations -database "postgresql://root:1234@localhost:5432/medical-services?sslmode=disable" up
+	migrate -path ./db/migrations -database "postgresql://root:gwent@localhost:5432/gwent?sslmode=disable" up
 
 .PHONY: migrate postgresql down
 migratedown: # migrate postgresql down
-	migrate -path ./db/migrations -database "postgresql://root:1234@localhost:5432/medical-services?sslmode=disable" down
+	migrate -path ./db/migrations -database "postgresql://root:gwent@localhost:5432/gwent?sslmode=disable" down

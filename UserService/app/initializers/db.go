@@ -31,7 +31,7 @@ func DbConnection() *pgxpool.Pool {
 	if err != nil {
 		log.Panicf("DB Ping failed: %v", err)
 	}
-	runMigrations()
+	//runMigrations()
 	log.Info("DB connected successfully")
 	return pool
 }

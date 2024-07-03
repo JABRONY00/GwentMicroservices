@@ -1,9 +1,15 @@
 package helpers
 
-func ValidatePassword(password string) bool {
-	return len([]rune(password)) >= 4
+import "errors"
+
+func ValidatePassword(password string) error {
+	if len([]rune(password)) >= 4 {
+		return nil
+	}
+	return errors.New("your password is too short")
 }
 
-func ValidateEmail(email string) bool {
-	return true
+func ValidateEmail(email string) error {
+
+	return nil
 }

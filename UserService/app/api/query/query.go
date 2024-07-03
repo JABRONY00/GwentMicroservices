@@ -5,21 +5,10 @@ import (
 	"context"
 )
 
-func CheckPlayerExists(name string) (bool, error) {
+func CheckPlayerExists(name string) error {
 	res := DB.QueryRow(context.Background(), "SELECT DISTINCT name FROM players WHERE name = $1", name)
 	err := res.Scan()
-	switch {
-	case err == nil:
-		{
-			return true, nil
-		}
-	case err.Error() == "no rows in result set":
-		{
-			return false, nil
-		}
-	}
-
-	return false, err
+	return err
 }
 
 func InsertPlayer(player *models.PlayerInfoPassword) error {
@@ -30,7 +19,7 @@ func InsertPlayer(player *models.PlayerInfoPassword) error {
 }
 
 func GetPlayerForAuth(player *models.PlayerInfoPassword) error {
-	rows := DB.QueryRow(context.Background(), "SELECT id, password FROM players WHERE email = $1", player.Email)
+	rows := DB.QueryRow(context.Background(), "SELECT id, password_hash FROM players WHERE email = $1", player.Email)
 	err := rows.Scan(&player.ID, &player.PasswordHash)
 
 	return err

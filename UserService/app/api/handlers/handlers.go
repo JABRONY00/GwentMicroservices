@@ -3,7 +3,6 @@ package handlers
 import (
 	"GwentMicroservices/UserService/app/api/models"
 	"GwentMicroservices/UserService/app/api/services"
-	"GwentMicroservices/UserService/app/helpers"
 	log "GwentMicroservices/UserService/app/helpers/log"
 	"net/http"
 
@@ -19,30 +18,25 @@ func UserSignUp(c *gin.Context) {
 		return
 	}
 
-	exists, err := services.PlayerExistanceCheck(player.Name)
+	err = services.RegistrationInfoValidation(player)
+	if err != nil {
+		log.HttpLog(c, log.Warn, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = services.PlayerExistanceCheck(player.Name)
 	switch {
-	case err != nil:
-		{
-			log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-	case exists:
+	case err.Error() == "no rows in result set":
 		{
 			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid name")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "player name is already reserved"})
 			return
 		}
-	case helpers.ValidateEmail(player.Email):
+	case err != nil:
 		{
-			log.HttpLog(c, log.Warn, http.StatusBadRequest, "Invalid email")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
-			return
-		}
-	case helpers.ValidatePassword(player.Password):
-		{
-			log.HttpLog(c, log.Warn, http.StatusBadRequest, "invalid password")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
+			log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return
 		}
 	}
@@ -70,13 +64,25 @@ func UserSignUp(c *gin.Context) {
 func UserLogin(c *gin.Context) {
 	var player models.PlayerInfoPassword
 	err := c.ShouldBindJSON(&player)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	switch {
+	case err != nil:
+		fallthrough
+	case player.Email == "":
+		fallthrough
+	case player.Password == "":
+		{
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	err = services.AuthPlayer(&player)
 	switch {
+	case err.Error() == "no rows in result set":
+		{
+			c.JSON(http.StatusBadRequest, gin.H{"error": "player does not exist"})
+			return
+		}
 	case err.Error() == "bad password":
 		{
 			c.JSON(http.StatusBadRequest, gin.H{"error": "bad password"})
