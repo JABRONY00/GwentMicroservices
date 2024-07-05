@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -34,62 +33,40 @@ func NewConnection(c *gin.Context) {
 		Conn:    connection,
 		TableID: "",
 	})
-	ch := make(chan bool)
+	ch := make(chan struct{})
 	go WaitingConnection(name, ch)
 	WaitingClients.Set(name, ch)
 }
 
-func WaitingConnection(name string, matchmakerChan chan bool) {
-	startTime := time.Now()
-	ticker := time.NewTicker(time.Second)
-	stopTimer := make(chan bool)
-	client := ActiveClients.Get(name).(engine.Client)
+func WaitingConnection(name string, matchmakerChan chan struct{}) {
+	client := ActiveClients.Get(name)
 	client.Conn.Mut.Lock()
 	client.Conn.WriteJSON("Wait for second player")
 	client.Conn.Mut.Unlock()
-	go func() {
-		for {
-			select {
-			case <-stopTimer:
-				return
-			case t := <-ticker.C:
-				{
-					client.Conn.Mut.Lock()
-					client.Conn.WriteJSON(engine.ResponseData{Instr: "waiting-time", Data: t.Sub(startTime).Round(time.Second).String()})
-					client.Conn.Mut.Unlock()
-				}
-			}
-		}
-	}()
+
 	for {
-		select {
-		case <-matchmakerChan:
+		_, isOpen := <-matchmakerChan
+		switch {
+		case !isOpen:
 			{
-				close(matchmakerChan)
-				matchmakerChan = nil
-				stopTimer <- true
-				ticker.Stop()
 				return
 			}
 		default:
 			{
 				_, _, err := client.Conn.ReadMessage()
 				if err != nil {
-					close(matchmakerChan)
-					matchmakerChan = nil
-					stopTimer <- true
+					matchmakerChan <- struct{}{}
 					client.Conn.Close()
-					close(stopTimer)
-					ticker.Stop()
 					return
 				}
 			}
 		}
+
 	}
 }
 
 func ReadConnection(player string) {
-	client := ActiveClients.Get(player).(models.Client)
+	client := ActiveClients.Get(player)
 	defer client.Conn.Close()
 	client.Conn.WriteJSON(engine.ResponseData{Instr: "Game is running..."})
 	for {
@@ -106,7 +83,7 @@ func ReadConnection(player string) {
 		}
 		if reqBody.Instr != "" {
 			/////////////// Move processing /////////////////////
-			t := ActiveGameTables.Get(client.TableID).(*engine.Table)
+			t := ActiveGameTables.Get(client.TableID)
 			// Move validation
 			switch {
 			case reqBody.Instr == "check":
