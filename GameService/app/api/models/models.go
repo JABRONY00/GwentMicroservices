@@ -8,40 +8,45 @@ import (
 
 type Client struct {
 	Name    string
-	Conn    *websocket.Conn
 	TableID string
+	Conn    *websocket.Conn
 }
 
 type WaitingClient struct {
 	Name string
-	Ch   chan bool
+	Ch   chan struct{}
 }
 
-type ConcMap struct {
+type PlayerPreset struct {
+	Race  string
+	Stack []uint
+}
+
+type ConcMap[T any] struct {
 	sync.RWMutex
-	Content map[string]interface{}
+	Content map[string]T
 }
 
-func (c *ConcMap) Init() {
+func (c *ConcMap[T]) Init() {
 	c.Lock()
 	defer c.Unlock()
-	c.Content = make(map[string]interface{})
+	c.Content = make(map[string]T)
 }
 
-func (c *ConcMap) Set(key string, value interface{}) {
+func (c *ConcMap[T]) Set(key string, value T) {
 	c.Lock()
 	defer c.Unlock()
 	c.Content[key] = value
 }
 
-func (c *ConcMap) Get(key string) interface{} {
+func (c *ConcMap[T]) Get(key string) T {
 	c.Lock()
 	defer c.Unlock()
 	value := c.Content[key]
 	return value
 }
 
-func (c *ConcMap) Delete(key string) {
+func (c *ConcMap[T]) Delete(key string) {
 	c.Lock()
 	defer c.Unlock()
 	delete(c.Content, key)

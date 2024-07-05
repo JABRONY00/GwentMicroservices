@@ -2,55 +2,66 @@ package services
 
 import (
 	"GwentMicroservices/GameService/app/api/models"
-	"GwentMicroservices/GameService/app/engine"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func MatchMaker(dbPool *pgxpool.Pool) {
-	var pair []models.WaitingClient
-	var disconnected []string
+generalLoop:
 	for {
-		WaitingClients.RWMutex.Lock()
+		var disconnected []string
+		pair := make([]models.WaitingClient, 0, 2)
+		WaitingClients.RWMutex.RLock()
+		if len(WaitingClients.Content) < 2 {
+			WaitingClients.RWMutex.RUnlock()
+			time.Sleep(time.Second * 1)
+			continue generalLoop
+		}
+
+	innerLoop:
 		for key, value := range WaitingClients.Content {
+			switch {
+			case len(pair) == 2:
+				break innerLoop
+			case len(value) != 0:
+				{
+					close(value)
+					disconnected = append(disconnected, key)
+				}
+			default:
+				{
+					pair = append(pair, models.WaitingClient{Name: key, Ch: value})
+				}
+			}
+		}
+		WaitingClients.RWMutex.RUnlock()
 
-			if value != nil {
-				pair = append(pair, models.WaitingClient{Name: key, Ch: value.(chan bool)})
-			} else {
-				disconnected = append(disconnected, key)
+		if len(pair[0].Ch) == 0 && len(pair[1].Ch) == 0 {
+			close(pair[0].Ch)
+			close(pair[1].Ch)
+			NewTable(pair[0].Name, pair[1].Name)
+			WaitingClients.Delete(pair[0].Name)
+			WaitingClients.Delete(pair[1].Name)
+		} else {
+			if len(pair[0].Ch) != 0 {
+				close(pair[0].Ch)
+				disconnected = append(disconnected, pair[0].Name)
 			}
-			if len(pair) == 2 {
-				break
+			if len(pair[1].Ch) != 0 {
+				close(pair[1].Ch)
+				disconnected = append(disconnected, pair[1].Name)
 			}
 		}
-		WaitingClients.RWMutex.Unlock()
-		for index := range pair {
-			pair[index].Ch <- true
-			WaitingClients.Delete(pair[index].Name)
-		}
-		NewTable(dbPool, pair[0].Name, pair[1].Name)
+
 		if len(disconnected) != 0 {
+			WaitingClients.RWMutex.Lock()
 			for index := range disconnected {
-				WaitingClients.Delete(disconnected[index])
+				delete(WaitingClients.Content, disconnected[index])
 			}
+			WaitingClients.RWMutex.Unlock()
 		}
+
 		pair = nil
-		time.Sleep(time.Second * 1)
 	}
-}
-
-func NewTable(dbPool *pgxpool.Pool, clientname1 string, clientname2 string) {
-	go ReadConnection(clientname1)
-	go ReadConnection(clientname2)
-	client1 := ActiveClients.Get(clientname1).(models.Client)
-	client2 := ActiveClients.Get(clientname2).(models.Client)
-	newTable := engine.NewTable(dbPool,
-		engine.Client{Name: client1.Name, Conn: client1.Conn},
-		engine.Client{Name: client2.Name, Conn: client2.Conn})
-	client1.TableID = newTable.TableID
-	client2.TableID = newTable.TableID
-	ActiveClients.Set(clientname1, client1)
-	ActiveClients.Set(clientname2, client2)
-
 }
