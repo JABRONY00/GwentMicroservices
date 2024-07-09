@@ -27,20 +27,20 @@ func NewConnection(c *gin.Context) {
 	connection, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	playerID, ok := c.Keys["ID"].(string)
 	if !ok {
 		log.HttpLog(c, log.Error, http.StatusInternalServerError, "Failed to get player ID")
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	name, err := query.GetPlayerNameByID(playerID)
 	if err != nil {
 		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
