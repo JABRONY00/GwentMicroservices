@@ -13,5 +13,5 @@ func Routes(r *gin.Engine, db *pgxpool.Pool) {
 	query.TransferDB(db)
 	r.POST("/user/sign-up", handlers.UserSignUp)
 	r.GET("/user/login", handlers.UserLogin)
-	r.GET("/user/logout", handlers.UserLogout)
+	r.GET("/user/logout", AuthMidlewares(), handlers.UserLogout)
 }
