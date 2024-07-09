@@ -65,17 +65,13 @@ func CreateToken(id string) (string, int, error) {
 }
 
 func AuthPlayer(player *models.PlayerInfoPassword) error {
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(player.Password), 10)
+
+	err := query.GetPlayerForAuth(player)
 	if err != nil {
 		return err
 	}
 
-	err = query.GetPlayerForAuth(player)
-	if err != nil {
-		return err
-	}
-
-	err = bcrypt.CompareHashAndPassword(player.PasswordHash, passwordHash)
+	err = bcrypt.CompareHashAndPassword(player.PasswordHash, []byte(player.Password))
 	if err != nil {
 		return errors.New("bad password")
 	}

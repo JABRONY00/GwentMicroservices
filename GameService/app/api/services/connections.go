@@ -73,6 +73,7 @@ func WaitingConnection(name string, matchmakerChan chan struct{}) {
 				}
 			}
 		}
+
 	}
 }
 

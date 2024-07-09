@@ -7,7 +7,8 @@ import (
 
 func CheckPlayerExists(name string) error {
 	res := DB.QueryRow(context.Background(), "SELECT DISTINCT name FROM players WHERE name = $1", name)
-	err := res.Scan()
+	var existingName string
+	err := res.Scan(&existingName)
 	return err
 }
 

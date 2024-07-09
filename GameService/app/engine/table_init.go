@@ -14,7 +14,6 @@ import (
 )
 
 func NewTable(client1 *models.Client, client2 *models.Client) *Table {
-
 	t := new(Table)
 	t.TableID = uuid.New().String()
 	t.PlayerA.Name = client1.Name
