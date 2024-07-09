@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"GwentMicroservices/GameService/app/api/models"
 	"errors"
 	"math"
 	"math/rand"
@@ -10,26 +11,21 @@ import (
 )
 
 func (t *Table) EndGame() {
-	t.PlayerA.Conn.Mut.Lock()
-	t.PlayerA.Conn.WriteJSON(ResponseData{Instr: "end-game"})
-	t.PlayerA.Conn.Mut.Unlock()
-	t.PlayerB.Conn.Mut.Lock()
-	t.PlayerB.Conn.WriteJSON(ResponseData{Instr: "end-game"})
-	t.PlayerB.Conn.Mut.Unlock()
+	t.PlayerA.SendJson(models.ResponseData{Instr: "end-game"})
+	t.PlayerB.SendJson(models.ResponseData{Instr: "end-game"})
+
 	if t.Winner != "" {
-		t.Players[t.Winner].Conn.Mut.Lock()
-		t.Players[t.Winner].Conn.WriteJSON("You Win")
-		t.Players[t.Winner].Conn.Mut.Unlock()
+
+		t.Players[t.Winner].SendJson("You Win")
+
 	}
+
 	if t.PlayerA.Name != t.Winner {
-		t.PlayerA.Conn.Mut.Lock()
-		t.PlayerA.Conn.WriteJSON("You Lose")
-		t.PlayerA.Conn.Mut.Unlock()
+		t.PlayerA.SendJson("You Lose")
 	}
+
 	if t.PlayerB.Name != t.Winner {
-		t.PlayerB.Conn.Mut.Lock()
-		t.PlayerB.Conn.WriteJSON("You Lose")
-		t.PlayerB.Conn.Mut.Unlock()
+		t.PlayerB.SendJson("You Lose")
 	}
 }
 
@@ -155,15 +151,23 @@ func (gf *GameField) GameFieldBonusCounter(weather bool) {
 	} else {
 		gf.ActiveBonuses.Weather = 0
 	}
-	gf.ActiveBonuses.Squads = nil
+	gf.ActiveBonuses.Squads = make(map[string]uint)
 	gf.ActiveBonuses.Horn = 0
 	gf.ActiveBonuses.Boost = 0
+
 	if gf.HornField != nil {
 		gf.ActiveBonuses.Horn = 1
 	}
+
 	for i := range gf.CardField {
 		if gf.CardField[i].CardBonus.Squad != "" {
-			gf.ActiveBonuses.Squads = append(gf.ActiveBonuses.Squads, gf.CardField[i].CardBonus.Squad)
+			koef, ok := gf.ActiveBonuses.Squads[gf.CardField[i].Squad]
+			if ok {
+				gf.ActiveBonuses.Squads[gf.CardField[i].Squad] = koef + 1
+			} else {
+				gf.ActiveBonuses.Squads[gf.CardField[i].Squad] = 1
+			}
+
 		}
 		if gf.CardField[i].CardBonus.Horn {
 			gf.ActiveBonuses.Horn++
@@ -177,7 +181,7 @@ func (gf *GameField) GameFieldBonusCounter(weather bool) {
 func (gf *GameField) GameFieldScoreCounter() uint {
 	gf.MaxCardScore = 0
 	gf.Score = 0
-	squadKoef := 0
+	squadKoef := 1
 	hornKoef := gf.ActiveBonuses.Horn
 	hornfix := uint(0)
 	weatherfix := uint(0)
@@ -196,11 +200,7 @@ func (gf *GameField) GameFieldScoreCounter() uint {
 					continue
 				}
 				if gf.CardField[i].CardBonus.Squad != "" {
-					for _, squad := range gf.ActiveBonuses.Squads {
-						if squad == gf.CardField[i].CardBonus.Squad {
-							squadKoef++
-						}
-					}
+					squadKoef = int(gf.ActiveBonuses.Squads[gf.CardField[i].CardBonus.Squad])
 				}
 				if gf.CardField[i].Cost == 0 && gf.ActiveBonuses.Weather == 1 {
 					weatherfix = 1
@@ -216,12 +216,12 @@ func (gf *GameField) GameFieldScoreCounter() uint {
 				} else {
 					boostfix = 0
 				}
-				gf.CardField[i].Score = ((gf.CardField[i].Cost-gf.ActiveBonuses.Weather*(gf.CardField[i].Cost-1)-weatherfix)*uint(math.Pow(2, float64(squadKoef))) + (gf.ActiveBonuses.Boost - boostfix)) * uint(math.Pow(2, float64(hornKoef-hornfix)))
+				gf.CardField[i].Score = ((gf.CardField[i].Cost-gf.ActiveBonuses.Weather*(gf.CardField[i].Cost-1)-weatherfix)*uint(squadKoef) + (gf.ActiveBonuses.Boost - boostfix)) * uint(math.Pow(2, float64(hornKoef-hornfix)))
 				gf.Score += gf.CardField[i].Score
 				if gf.CardField[i].Score > gf.MaxCardScore {
 					gf.MaxCardScore = gf.CardField[i].Score
 				}
-				squadKoef = 0
+				squadKoef = 1
 				hornfix = 0
 				weatherfix = 0
 				hornKoef = gf.ActiveBonuses.Horn

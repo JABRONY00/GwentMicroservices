@@ -1,0 +1,800 @@
+[
+{
+"name": "Foltest",
+"id": 1,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "weather-fog",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Foltest",
+"id": 2,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "weather-clear",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Foltest",
+"id": 3,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "horn-siege",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Foltest",
+"id": 4,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "kill-siege",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Foltest",
+"id": 5,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "kill-distant",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Ballista1",
+"id": 6,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Ballista2",
+"id": 7,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "BlueStripesCommando1",
+"id": 8,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "BlueStripes",
+"horn": false,
+"boost": false
+},
+{
+"name": "BlueStripesCommando2",
+"id": 9,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "BlueStripes",
+"horn": false,
+"boost": false
+},
+{
+"name": "BlueStripesCommando3",
+"id": 10,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "BlueStripes",
+"horn": false,
+"boost": false
+},
+{
+"name": "Catapult1",
+"id": 11,
+"rareness": false,
+"cost": 8,
+"score": 8,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Catapult",
+"horn": false,
+"boost": false
+},
+{
+"name": "Catapult2",
+"id": 12,
+"rareness": false,
+"cost": 8,
+"score": 8,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Catapult",
+"horn": false,
+"boost": false
+},
+{
+"name": "CrinfridReavers1",
+"id": 13,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "reavers",
+"horn": false,
+"boost": false
+},
+{
+"name": "CrinfridReavers2",
+"id": 14,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "reavers",
+"horn": false,
+"boost": false
+},
+{
+"name": "CrinfridReavers3",
+"id": 15,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "reavers",
+"horn": false,
+"boost": false
+},
+{
+"name": "Dethmold",
+"id": 16,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "DunBannerMedic",
+"id": 17,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "healer",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EsteradThyssen",
+"id": 18,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "JohnNatalis",
+"id": 19,
+"rareness": true,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "KaedweniSiegeExpert1",
+"id": 20,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": true
+},
+{
+"name": "KaedweniSiegeExpert2",
+"id": 21,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": true
+},
+{
+"name": "KaedweniSiegeExpert3",
+"id": 22,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": true
+},
+{
+"name": "KeiraMetz",
+"id": 23,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "PhilippaEilhart",
+"id": 24,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "PoorFuckingInfantry1",
+"id": 25,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Infantry",
+"horn": false,
+"boost": false
+},
+{
+"name": "PoorFuckingInfantry2",
+"id": 26,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Infantry",
+"horn": false,
+"boost": false
+},
+{
+"name": "PoorFuckingInfantry3",
+"id": 27,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Infantry",
+"horn": false,
+"boost": false
+},
+{
+"name": "PrinceStennis",
+"id": 28,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "RedanianFootSoldier1",
+"id": 29,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "RedanianFootSoldier2",
+"id": 30,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SabrinaGlevissig",
+"id": 31,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SheldonSkaggs",
+"id": 32,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SiegeTower",
+"id": 33,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SiegfriedOfDenesle",
+"id": 34,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SigismundDijkstra",
+"id": 35,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SileDeTanserville",
+"id": 36,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Thaler",
+"id": 37,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Trebuchet1",
+"id": 38,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Trebuchet2",
+"id": 39,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "VernonRoche",
+"id": 40,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Ves",
+"id": 41,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "YarpenZigrin",
+"id": 42,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+}
+]

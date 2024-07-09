@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewTable(client1 Client, client2 Client) *Table {
+func NewTable(client1 *models.Client, client2 *models.Client) *Table {
 	t := new(Table)
 	t.TableID = uuid.New().String()
 	t.PlayerA.Name = client1.Name
@@ -29,12 +29,20 @@ func NewTable(client1 Client, client2 Client) *Table {
 		Field.Distant: &t.PlayerA.DistantField,
 		Field.Siege:   &t.PlayerA.SiegeField,
 	}
+	t.PlayerA.Fields[Field.Assault].ActiveBonuses.Squads = make(map[string]uint)
+	t.PlayerA.Fields[Field.Distant].ActiveBonuses.Squads = make(map[string]uint)
+	t.PlayerA.Fields[Field.Siege].ActiveBonuses.Squads = make(map[string]uint)
+
 	t.PlayerB.Fields = make(map[string]*GameField)
 	t.PlayerB.Fields = map[string]*GameField{
 		Field.Assault: &t.PlayerB.AssaultField,
 		Field.Distant: &t.PlayerB.DistantField,
 		Field.Siege:   &t.PlayerB.SiegeField,
 	}
+	t.PlayerB.Fields[Field.Assault].ActiveBonuses.Squads = make(map[string]uint)
+	t.PlayerB.Fields[Field.Distant].ActiveBonuses.Squads = make(map[string]uint)
+	t.PlayerB.Fields[Field.Siege].ActiveBonuses.Squads = make(map[string]uint)
+
 	t.Players = make(map[string]*PlayerField)
 	t.Players = map[string]*PlayerField{
 		t.PlayerA.Name: &t.PlayerA,
@@ -68,11 +76,11 @@ func (t *Table) InitTable(presets *map[string]models.PlayerPreset) {
 	t.Pm.IDs = t.Players[t.Pm.ActPlr].GetIDsHand()
 	t.Players[t.Pm.ActPlr].Conn.Mut.Lock()
 	t.Players[t.Pm.ActPlr].Conn.WriteJSON("Game is running")
-	t.Players[t.Pm.ActPlr].Conn.WriteJSON(ResponseData{Instr: Instr.Move, Data: t.Pm.IDs})
+	t.Players[t.Pm.ActPlr].Conn.WriteJSON(models.ResponseData{Instr: Instr.Move, Data: t.Pm.IDs})
 	t.Players[t.Pm.ActPlr].Conn.Mut.Unlock()
 	t.Players[t.Pm.PasPlr].Conn.Mut.Lock()
 	t.Players[t.Pm.PasPlr].Conn.WriteJSON("Game is running")
-	t.Players[t.Pm.PasPlr].Conn.WriteJSON(ResponseData{Instr: Instr.Wait})
+	t.Players[t.Pm.PasPlr].Conn.WriteJSON(models.ResponseData{Instr: Instr.Wait})
 	t.Players[t.Pm.PasPlr].Conn.Mut.Unlock()
 }
 

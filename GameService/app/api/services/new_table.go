@@ -6,15 +6,15 @@ import (
 )
 
 func NewTable(clientname1 string, clientname2 string) error {
-	go ReadConnection(clientname1)
-	go ReadConnection(clientname2)
+	go GameConnection(clientname1)
+	go GameConnection(clientname2)
 
 	client1 := ActiveClients.Get(clientname1)
 	client2 := ActiveClients.Get(clientname2)
 
 	newTable := engine.NewTable(
-		engine.Client{Name: client1.Name, Conn: client1.Conn},
-		engine.Client{Name: client2.Name, Conn: client2.Conn},
+		&client1,
+		&client2,
 	)
 
 	presets, err := query.GetPlayersPreset(clientname1, clientname2)
