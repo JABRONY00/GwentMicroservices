@@ -1,11 +1,13 @@
 package engine
 
+import "GwentMicroservices/GameService/app/api/models"
+
 func (t *Table) RefreshTable() {
 	t.PlayerA.Conn.Mut.Lock()
-	t.PlayerA.Conn.WriteJSON(ResponseData{Instr: Instr.Refresh, Data: t.GetTableInfo(t.PlayerA.Name)})
+	t.PlayerA.Conn.WriteJSON(models.ResponseData{Instr: Instr.Refresh, Data: t.GetTableInfo(t.PlayerA.Name)})
 	t.PlayerA.Conn.Mut.Unlock()
 	t.PlayerB.Conn.Mut.Lock()
-	t.PlayerB.Conn.WriteJSON(ResponseData{Instr: Instr.Refresh, Data: t.GetTableInfo(t.PlayerB.Name)})
+	t.PlayerB.Conn.WriteJSON(models.ResponseData{Instr: Instr.Refresh, Data: t.GetTableInfo(t.PlayerB.Name)})
 	t.PlayerB.Conn.Mut.Unlock()
 }
 

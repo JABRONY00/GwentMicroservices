@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"GwentMicroservices/GameService/app/api/models"
 	"errors"
 	"sort"
 )
@@ -32,6 +33,7 @@ func (t *Table) MoveRouter(reqBody RequestData) error {
 			return errors.New(Instr.ForbMove)
 		}
 	}
+
 	if err != nil {
 		return err
 	}
@@ -39,6 +41,7 @@ func (t *Table) MoveRouter(reqBody RequestData) error {
 	if len(t.Players[t.Pm.ActPlr].Hand) == 0 && !t.Players[t.Pm.ActPlr].LeaderFlag {
 		t.Pm.Instr = Instr.Pass
 	}
+
 	switch t.Pm.Instr {
 	case Instr.Pass:
 		{
@@ -245,7 +248,7 @@ func (t *Table) MetaResponse(player string, cardID uint) {
 	pointer := t.CardByID(cardID)
 	if pointer != nil {
 		t.Players[player].Conn.Mut.Lock()
-		t.Players[player].Conn.WriteJSON(ResponseData{Instr: "meta", Data: *pointer})
+		t.Players[player].Conn.WriteJSON(models.ResponseData{Instr: "meta", Data: *pointer})
 		t.Players[player].Conn.Mut.Unlock()
 		return
 	}

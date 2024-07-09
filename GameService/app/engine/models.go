@@ -1,21 +1,10 @@
 package engine
 
 import (
-	"github.com/gorilla/websocket"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"GwentMicroservices/GameService/app/api/models"
 )
 
 //COMMUNICATION OBJECTS
-
-type Client struct {
-	Name string
-	Conn *websocket.Conn
-}
-
-type ResponseData struct {
-	Instr string      `json:"instruction"`
-	Data  interface{} `json:"data"`
-}
 
 type RequestData struct {
 	Instr       string `json:"instruction"`
@@ -45,12 +34,11 @@ type Table struct {
 	MaxCardScore uint
 	Winner       string
 	ActiveCards  []Card
-	Db           *pgxpool.Pool
 }
 
 type PlayerField struct {
 	Name         string
-	Conn         *websocket.Conn
+	Conn         *models.Connection
 	Score        uint
 	WinTokens    uint
 	MaxCardScore uint
@@ -75,7 +63,7 @@ type GameField struct {
 	HornField     []*Card // Place for keeping a Doubler card
 	ActiveBonuses struct {
 		Weather uint
-		Squads  []string
+		Squads  map[string]uint
 		Horn    uint
 		Boost   uint
 	} // Wich bonuses affect cards on field
