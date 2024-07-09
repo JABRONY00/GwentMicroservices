@@ -12,10 +12,6 @@ import (
 
 func InitMiddlewares(r *gin.Engine, dbPool *pgxpool.Pool) {
 	r.Use(func(c *gin.Context) {
-		c.Set("dbPool", dbPool)
-		c.Next()
-	})
-	r.Use(func(c *gin.Context) {
 		startTime := time.Now()
 		c.Set("startTime", startTime)
 		c.Next()
@@ -42,7 +38,7 @@ func AuthMidlewares() gin.HandlerFunc {
 			return
 		}
 		claims := token.Claims.(*models.Claims)
-		c.Set("player", claims.Subject)
+		c.Set("ID", claims.Subject)
 		c.Next()
 	}
 }

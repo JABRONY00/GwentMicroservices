@@ -36,7 +36,7 @@ func UserSignUp(c *gin.Context) {
 	case err.Error() != "no rows in result set":
 		{
 			log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			c.JSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
 	}
@@ -44,7 +44,7 @@ func UserSignUp(c *gin.Context) {
 	err = services.CreatePlayer(&player)
 	if err != nil {
 		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
@@ -54,7 +54,7 @@ func UserSignUp(c *gin.Context) {
 	signedString, limit, err := services.CreateToken(player.ID)
 	if err != nil {
 		log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	c.SetCookie("token", signedString, limit, "/", "localhost", false, true)
@@ -95,7 +95,7 @@ func UserLogin(c *gin.Context) {
 	default:
 		{
 			log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 	}
@@ -103,7 +103,7 @@ func UserLogin(c *gin.Context) {
 	signedString, limit, err := services.CreateToken(player.ID)
 	if err != nil {
 		log.HttpLog(c, log.Info, http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
