@@ -11,6 +11,6 @@ import (
 func Routes(r *gin.Engine, dbPool *pgxpool.Pool) {
 	InitMiddlewares(r, dbPool)
 	query.TransferDB(dbPool)
-	r.POST("/game/start", services.NewConnection)
+	r.POST("/game/start", AuthMidlewares(), services.NewConnection)
 
 }

@@ -1,0 +1,781 @@
+[
+{
+"name": "EmhyrVarEmreis",
+"id": 1,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "weather-rain",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EmhyrVarEmreis",
+"id": 2,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": true,
+"leaderbonus": "skill-restriction",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EmhyrVarEmreis",
+"id": 3,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EmhyrVarEmreis",
+"id": 4,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EmhyrVarEmreis",
+"id": 5,
+"rareness": true,
+"cost": 0,
+"score": 0,
+"role": "leader",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Albrich",
+"id": 6,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "AssireVarAnahid",
+"id": 7,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "BlackInfantryArcher1",
+"id": 8,
+"rareness": false,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "BlackInfantryArcher2",
+"id": 9,
+"rareness": false,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "CahirMawrDyffryn",
+"id": 10,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Cynthia",
+"id": 11,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EtolianAuxiliaryArcher1",
+"id": 12,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "healer",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "EtolianAuxiliaryArcher2",
+"id": 13,
+"rareness": false,
+"cost": 1,
+"score": 1,
+"role": "healer",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "FringillaVigo",
+"id": 14,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "HeavyZerrikanianFireScorpion",
+"id": 15,
+"rareness": false,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "ImperaBrigadeGuard1",
+"id": 16,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "ImperaBrigade",
+"horn": false,
+"boost": false
+},
+{
+"name": "ImperaBrigadeGuard2",
+"id": 17,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "ImperaBrigade",
+"horn": false,
+"boost": false
+},
+{
+"name": "ImperaBrigadeGuard3",
+"id": 18,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "ImperaBrigade",
+"horn": false,
+"boost": false
+},
+{
+"name": "ImperaBrigadeGuard4",
+"id": 19,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "ImperaBrigade",
+"horn": false,
+"boost": false
+},
+{
+"name": "LethoOfGulet",
+"id": 20,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "MennoCoehoorn",
+"id": 21,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "healer",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Morteisen",
+"id": 22,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "MorvranVoorhis",
+"id": 23,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "NausicaaCavalryRider1",
+"id": 24,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "NausicaaCavalry",
+"horn": false,
+"boost": false
+},
+{
+"name": "NausicaaCavalryRider2",
+"id": 25,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "NausicaaCavalry",
+"horn": false,
+"boost": false
+},
+{
+"name": "NausicaaCavalryRider3",
+"id": 26,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "NausicaaCavalry",
+"horn": false,
+"boost": false
+},
+{
+"name": "Puttkammer",
+"id": 27,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Rainfarn",
+"id": 28,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "RenualdAepMatsen",
+"id": 29,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "RottenMangonel",
+"id": 30,
+"rareness": false,
+"cost": 3,
+"score": 3,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "ShilardFitzOesterlen",
+"id": 31,
+"rareness": false,
+"cost": 7,
+"score": 7,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "SiegeEngineer",
+"id": 32,
+"rareness": false,
+"cost": 6,
+"score": 6,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "StefanSkellen",
+"id": 33,
+"rareness": false,
+"cost": 9,
+"score": 9,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Sweers",
+"id": 34,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "TiborEggebracht",
+"id": 35,
+"rareness": true,
+"cost": 10,
+"score": 10,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Vanhemar",
+"id": 36,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": true,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "VattierDeRideaux",
+"id": 37,
+"rareness": false,
+"cost": 4,
+"score": 4,
+"role": "spy",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "Vreemde",
+"id": 38,
+"rareness": false,
+"cost": 2,
+"score": 2,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+},
+{
+"name": "YoungEmissary1",
+"id": 39,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Emissary",
+"horn": false,
+"boost": false
+},
+{
+"name": "YoungEmissary2",
+"id": 40,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": true,
+"distant-field": false,
+"siege-field": false
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "Emissary",
+"horn": false,
+"boost": false
+},
+{
+"name": "ZerrikanianFireScorpion",
+"id": 41,
+"rareness": false,
+"cost": 5,
+"score": 5,
+"role": "",
+"description": "-",
+"targetfield": {
+"assault-field": false,
+"distant-field": false,
+"siege-field": true
+},
+"passive": false,
+"leaderbonus": "",
+"squad": "",
+"horn": false,
+"boost": false
+}
+]

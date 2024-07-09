@@ -3,13 +3,35 @@ package models
 import (
 	"sync"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/websocket"
 )
+
+type Claims struct {
+	jwt.StandardClaims
+}
+
+type ResponseData struct {
+	Instr string      `json:"instruction"`
+	Data  interface{} `json:"data"`
+}
+
+type Connection struct {
+	Mut *sync.RWMutex
+	*websocket.Conn
+}
 
 type Client struct {
 	Name    string
 	TableID string
-	Conn    *websocket.Conn
+	Conn    *Connection
+}
+
+func (c *Client) SendJson(resp interface{}) error {
+	c.Conn.Mut.Lock()
+	defer c.Conn.Mut.Unlock()
+	err := c.Conn.WriteJSON(resp)
+	return err
 }
 
 type WaitingClient struct {

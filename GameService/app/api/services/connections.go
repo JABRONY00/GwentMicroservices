@@ -2,7 +2,9 @@ package services
 
 import (
 	"GwentMicroservices/GameService/app/api/models"
+	"GwentMicroservices/GameService/app/api/query"
 	"GwentMicroservices/GameService/app/engine"
+	"GwentMicroservices/GameService/app/helpers/log"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,8 +16,8 @@ import (
 
 func NewConnection(c *gin.Context) {
 	if uint(len(ActiveGameTables.Content)) >= TablesLimit {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Too many players"})
-		fmt.Println("Tables limit reached! Connection declined!")
+		log.HttpLog(c, log.Error, http.StatusTooManyRequests, "Tables limit reached! Connection declined!")
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too many players"})
 		return
 	}
 	var upgrader = websocket.Upgrader{
@@ -24,13 +26,27 @@ func NewConnection(c *gin.Context) {
 	}
 	connection, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": ""})
+		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
-	name := c.MustGet("player").(string)
+	playerID, ok := c.Keys["ID"].(string)
+	if !ok {
+		log.HttpLog(c, log.Error, http.StatusInternalServerError, "Failed to get player ID")
+		c.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+
+	name, err := query.GetPlayerNameByID(playerID)
+	if err != nil {
+		log.HttpLog(c, log.Error, http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+
 	ActiveClients.Set(name, models.Client{
 		Name:    name,
-		Conn:    connection,
+		Conn:    &models.Connection{Conn: connection},
 		TableID: "",
 	})
 	ch := make(chan struct{})
@@ -40,9 +56,7 @@ func NewConnection(c *gin.Context) {
 
 func WaitingConnection(name string, matchmakerChan chan struct{}) {
 	client := ActiveClients.Get(name)
-	client.Conn.Mut.Lock()
-	client.Conn.WriteJSON("Wait for second player")
-	client.Conn.Mut.Unlock()
+	client.SendJson("Wait for second player")
 
 	for {
 		_, isOpen := <-matchmakerChan
@@ -53,22 +67,19 @@ func WaitingConnection(name string, matchmakerChan chan struct{}) {
 			}
 		default:
 			{
-				_, _, err := client.Conn.ReadMessage()
-				if err != nil {
+				if _, _, err := client.Conn.ReadMessage(); err != nil {
 					matchmakerChan <- struct{}{}
-					client.Conn.Close()
 					return
 				}
 			}
 		}
-
 	}
 }
 
-func ReadConnection(player string) {
+func GameConnection(player string) {
 	client := ActiveClients.Get(player)
 	defer client.Conn.Close()
-	client.Conn.WriteJSON(engine.ResponseData{Instr: "Game is running..."})
+	client.SendJson(models.ResponseData{Instr: "Game is running..."})
 	for {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
@@ -84,14 +95,12 @@ func ReadConnection(player string) {
 		if reqBody.Instr != "" {
 			/////////////// Move processing /////////////////////
 			t := ActiveGameTables.Get(client.TableID)
+
 			// Move validation
 			switch {
 			case reqBody.Instr == "check":
 				{
-
-					t.Players[client.Name].Conn.Mut.Lock()
-					t.Players[client.Name].Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.Refresh, Data: t.GetTableInfo(client.Name)})
-					t.Players[client.Name].Conn.Mut.Unlock()
+					client.SendJson(models.ResponseData{Instr: engine.Instr.Refresh, Data: t.GetTableInfo(client.Name)})
 					continue
 				}
 			case reqBody.Instr == "check2":
@@ -106,42 +115,39 @@ func ReadConnection(player string) {
 				}
 			case t.Pm.ActPlr != client.Name:
 				fallthrough
-			case t.Pm.Instr != engine.Instr.Move && (reqBody.Instr == engine.Instr.PutCard || reqBody.Instr == engine.Instr.LBonus || reqBody.Instr == engine.Instr.Pass):
+			case t.Pm.Instr != engine.Instr.Move &&
+				(reqBody.Instr == engine.Instr.PutCard ||
+					reqBody.Instr == engine.Instr.LBonus ||
+					reqBody.Instr == engine.Instr.Pass):
 				fallthrough
 			case !slices.Contains(t.Pm.IDs, reqBody.CardID) && reqBody.CardID != 0:
 				{
-					client.Conn.Mut.Lock()
-					client.Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.ForbMove})
-					client.Conn.Mut.Unlock()
+					client.SendJson(models.ResponseData{Instr: engine.Instr.ForbMove})
 					continue
 				}
 			}
 			// Move validation
+
 			err := t.MoveRouter(reqBody)
 			if err != nil {
-				t.Players[t.Pm.ActPlr].Conn.Mut.Lock()
-				t.Players[t.Pm.ActPlr].Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.ForbMove})
-				t.Players[t.Pm.ActPlr].Conn.Mut.Unlock()
+				t.Players[t.Pm.ActPlr].SendJson(models.ResponseData{Instr: engine.Instr.ForbMove})
 				continue
 			}
+
 			ActiveGameTables.Set(t.TableID, t)
 			t.RefreshTable()
-			t.Players[t.Pm.ActPlr].Conn.Mut.Lock()
-			t.Players[t.Pm.ActPlr].Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.Move, Data: t.Pm.IDs})
-			t.Players[t.Pm.ActPlr].Conn.Mut.Unlock()
-			t.Players[t.Pm.PasPlr].Conn.Mut.Lock()
+			t.Players[t.Pm.ActPlr].SendJson(models.ResponseData{Instr: engine.Instr.Move, Data: t.Pm.IDs})
+
 			switch {
 			case t.Players[t.Pm.PasPlr].PassFlag:
 				{
-					t.Players[t.Pm.PasPlr].Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.Pass})
+					t.Players[t.Pm.PasPlr].SendJson(models.ResponseData{Instr: engine.Instr.Pass})
 				}
 			case t.Pm.Instr == engine.Instr.Move:
 				{
-					t.Players[t.Pm.PasPlr].Conn.WriteJSON(engine.ResponseData{Instr: engine.Instr.Wait})
+					t.Players[t.Pm.PasPlr].SendJson(models.ResponseData{Instr: engine.Instr.Wait})
 				}
 			}
-			t.Players[t.Pm.PasPlr].Conn.Mut.Unlock()
-
 			/////////////// Move processing //////////////
 		}
 	}

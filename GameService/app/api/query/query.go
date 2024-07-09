@@ -5,6 +5,14 @@ import (
 	"context"
 )
 
+func GetPlayerNameByID(id string) (string, error) {
+
+	rows := DB.QueryRow(context.Background(), "SELECT name FROM players WHERE id = $1", id)
+	var name string
+	err := rows.Scan(&name)
+	return name, err
+}
+
 func GetPlayersPreset(name1 string, name2 string) (map[string]models.PlayerPreset, error) {
 
 	rows, err := DB.Query(context.Background(), "SELECT name, race, stack FROM presets WHERE name IN('$1', '$2')", name1, name2)
