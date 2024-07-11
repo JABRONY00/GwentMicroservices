@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"slices"
 	"sort"
+	"sync"
 	"time"
 )
 
@@ -97,14 +98,22 @@ func (t *Table) PermissionSwitch() {
 ////////////////////////////
 
 func (t *Table) TableScoreCounter() {
+
 	t.MaxCardScore = 0
-	t.Players[t.Pm.ActPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
-	t.Players[t.Pm.PasPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+
+	twg := &sync.WaitGroup{}
+	twg.Add(2)
+
+	go t.Players[t.Pm.ActPlr].PlayerFieldScoreCounter(twg, t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	go t.Players[t.Pm.PasPlr].PlayerFieldScoreCounter(twg, t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	twg.Wait()
+
 	if t.Players[t.Pm.ActPlr].MaxCardScore > t.Players[t.Pm.PasPlr].MaxCardScore {
 		t.MaxCardScore = t.Players[t.Pm.ActPlr].MaxCardScore
 	} else {
 		t.MaxCardScore = t.Players[t.Pm.PasPlr].MaxCardScore
 	}
+
 	switch {
 	case int(t.Players[t.Pm.ActPlr].Score-t.Players[t.Pm.PasPlr].Score) > 0:
 		{
@@ -127,14 +136,21 @@ func (t *Table) TableScoreCounter() {
 	}
 }
 
-func (pf *PlayerField) PlayerFieldScoreCounter(frost bool, fog bool, rain bool) {
-	pf.Fields[Field.Assault].GameFieldBonusCounter(frost)
-	pf.Fields[Field.Distant].GameFieldBonusCounter(fog)
-	pf.Fields[Field.Siege].GameFieldBonusCounter(rain)
+func (pf *PlayerField) PlayerFieldScoreCounter(twg *sync.WaitGroup, frost bool, fog bool, rain bool) {
+	defer twg.Done()
 
-	pf.Score = pf.Fields[Field.Assault].GameFieldScoreCounter()
-	pf.Score += pf.Fields[Field.Distant].GameFieldScoreCounter()
-	pf.Score += pf.Fields[Field.Siege].GameFieldScoreCounter()
+	wg := &sync.WaitGroup{}
+	wg.Add(3)
+	go pf.Fields[Field.Assault].GameFieldBonusCounter(wg, frost)
+	go pf.Fields[Field.Distant].GameFieldBonusCounter(wg, fog)
+	go pf.Fields[Field.Siege].GameFieldBonusCounter(wg, rain)
+	wg.Wait()
+
+	wg.Add(3)
+	pf.Score = pf.Fields[Field.Assault].GameFieldScoreCounter(wg)
+	pf.Score += pf.Fields[Field.Distant].GameFieldScoreCounter(wg)
+	pf.Score += pf.Fields[Field.Siege].GameFieldScoreCounter(wg)
+	wg.Wait()
 
 	pf.MaxCardScore = pf.Fields[Field.Assault].MaxCardScore
 	if pf.MaxCardScore < pf.Fields[Field.Distant].MaxCardScore {
@@ -145,7 +161,9 @@ func (pf *PlayerField) PlayerFieldScoreCounter(frost bool, fog bool, rain bool) 
 	}
 }
 
-func (gf *GameField) GameFieldBonusCounter(weather bool) {
+func (gf *GameField) GameFieldBonusCounter(wg *sync.WaitGroup, weather bool) {
+	defer wg.Done()
+
 	if weather {
 		gf.ActiveBonuses.Weather = 1
 	} else {
@@ -178,7 +196,9 @@ func (gf *GameField) GameFieldBonusCounter(weather bool) {
 	}
 }
 
-func (gf *GameField) GameFieldScoreCounter() uint {
+func (gf *GameField) GameFieldScoreCounter(wg *sync.WaitGroup) uint {
+	defer wg.Done()
+
 	gf.MaxCardScore = 0
 	gf.Score = 0
 	squadKoef := 1
@@ -186,6 +206,7 @@ func (gf *GameField) GameFieldScoreCounter() uint {
 	hornfix := uint(0)
 	weatherfix := uint(0)
 	boostfix := uint(0)
+
 	switch {
 	case len(gf.CardField) < 1:
 		{
@@ -216,11 +237,13 @@ func (gf *GameField) GameFieldScoreCounter() uint {
 				} else {
 					boostfix = 0
 				}
+
 				gf.CardField[i].Score = ((gf.CardField[i].Cost-gf.ActiveBonuses.Weather*(gf.CardField[i].Cost-1)-weatherfix)*uint(squadKoef) + (gf.ActiveBonuses.Boost - boostfix)) * uint(math.Pow(2, float64(hornKoef-hornfix)))
 				gf.Score += gf.CardField[i].Score
 				if gf.CardField[i].Score > gf.MaxCardScore {
 					gf.MaxCardScore = gf.CardField[i].Score
 				}
+
 				squadKoef = 1
 				hornfix = 0
 				weatherfix = 0

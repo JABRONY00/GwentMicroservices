@@ -22,7 +22,7 @@ func NewTable(clientname1 string, clientname2 string) error {
 		return err
 	}
 
-	newTable.InitTable(&presets)
+	newTable.InitGame(presets)
 
 	ActiveGameTables.Set(newTable.TableID, newTable)
 

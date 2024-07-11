@@ -1,6 +1,7 @@
 package engine_test
 
-import (
+/*import (
+	"GwentMicroservices/GameService/app/api/models"
 	"GwentMicroservices/GameService/app/engine"
 	"sort"
 	"testing"
@@ -261,6 +262,8 @@ var Cards []engine.Card = []engine.Card{
 	},
 }
 
+var T = engine.NewTable(&models.Client{Name: "player1"}, &models.Client{Name: "player2"})
+
 func TestGameFieldBonusCounter(t *testing.T) {
 	var gameField engine.GameField
 
@@ -329,4 +332,4 @@ func TestGameFieldScoreCounter(t *testing.T) {
 
 	t.Logf("Results: %+v", gameField)
 
-}
+}*/

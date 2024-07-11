@@ -4,6 +4,7 @@ import (
 	"GwentMicroservices/GameService/app/api/models"
 	log "GwentMicroservices/GameService/app/helpers/log"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"os"
 	"slices"
@@ -20,42 +21,64 @@ func NewTable(client1 *models.Client, client2 *models.Client) *Table {
 	t.PlayerA.Conn = client1.Conn
 	t.PlayerB.Name = client2.Name
 	t.PlayerB.Conn = client2.Conn
-	t.PlayerA.WinTokens = 2
-	t.PlayerB.WinTokens = 2
 
-	t.PlayerA.Fields = make(map[string]*GameField)
-	t.PlayerA.Fields = map[string]*GameField{
-		Field.Assault: &t.PlayerA.AssaultField,
-		Field.Distant: &t.PlayerA.DistantField,
-		Field.Siege:   &t.PlayerA.SiegeField,
-	}
-	t.PlayerA.Fields[Field.Assault].ActiveBonuses.Squads = make(map[string]uint)
-	t.PlayerA.Fields[Field.Distant].ActiveBonuses.Squads = make(map[string]uint)
-	t.PlayerA.Fields[Field.Siege].ActiveBonuses.Squads = make(map[string]uint)
-
-	t.PlayerB.Fields = make(map[string]*GameField)
-	t.PlayerB.Fields = map[string]*GameField{
-		Field.Assault: &t.PlayerB.AssaultField,
-		Field.Distant: &t.PlayerB.DistantField,
-		Field.Siege:   &t.PlayerB.SiegeField,
-	}
-	t.PlayerB.Fields[Field.Assault].ActiveBonuses.Squads = make(map[string]uint)
-	t.PlayerB.Fields[Field.Distant].ActiveBonuses.Squads = make(map[string]uint)
-	t.PlayerB.Fields[Field.Siege].ActiveBonuses.Squads = make(map[string]uint)
+	t.PlayerA.InitPlayerField(client1)
+	t.PlayerB.InitPlayerField(client2)
 
 	t.Players = make(map[string]*PlayerField)
 	t.Players = map[string]*PlayerField{
 		t.PlayerA.Name: &t.PlayerA,
 		t.PlayerB.Name: &t.PlayerB,
 	}
+
 	return t
 }
 
-func (t *Table) InitTable(presets *map[string]models.PlayerPreset) {
+func (pf *PlayerField) InitPlayerField(client *models.Client) {
+	pf.Name = client.Name
+	pf.Conn = client.Conn
 
-	/*sort.SliceStable(t.ActiveCards,
-	func(i, j int) bool { return t.ActiveCards[i].ID < t.ActiveCards[j].ID })*/
-	t.StartStack(presets)
+	pf.AssaultField.ActiveBonuses.Squads = make(map[string]uint)
+	pf.DistantField.ActiveBonuses.Squads = make(map[string]uint)
+	pf.SiegeField.ActiveBonuses.Squads = make(map[string]uint)
+
+	pf.Fields = make(map[string]*GameField)
+	pf.Fields = map[string]*GameField{
+		Field.Assault: &pf.AssaultField,
+		Field.Distant: &pf.DistantField,
+		Field.Siege:   &pf.SiegeField,
+	}
+
+}
+
+////////////////////////////////////////////////////////////////////////
+
+func (t *Table) InitGame(presets map[string]models.PlayerPreset) {
+
+	t.PlayerA.WinTokens = 2
+	t.PlayerB.WinTokens = 2
+
+	t.PlayerA.Race = presets[t.PlayerA.Name].Race
+	t.PlayerB.Race = presets[t.PlayerB.Name].Race
+
+	cards := t.GetStartCards(1, presets[t.PlayerA.Name])
+	if len(cards) < 1 {
+		log.ServerLog(log.Error, "StartStack", "There is no cards to work with")
+	}
+	t.ActiveCards = append(t.ActiveCards, cards...)
+	cards = t.GetStartCards(2, presets[t.PlayerB.Name])
+	if len(cards) < 1 {
+		log.ServerLog(log.Error, "StartStack", "There is no cards to work with")
+	}
+	t.ActiveCards = append(t.ActiveCards, cards...)
+	sort.SliceStable(t.ActiveCards,
+		func(i, j int) bool {
+			return t.ActiveCards[i].ID < t.ActiveCards[j].ID
+		},
+	)
+
+	t.StartStack()
+
 	t.PlayerA.StartHand()
 	t.PlayerB.StartHand()
 
@@ -72,21 +95,46 @@ func (t *Table) InitTable(presets *map[string]models.PlayerPreset) {
 			t.Pm.PasPlr = t.PlayerA.Name
 		}
 	}
-	t.Pm.Instr = Instr.ForbMove
+
+	if t.Players[t.Pm.PasPlr].Race == Race.Nilf &&
+		t.Players[t.Pm.ActPlr].Race != Race.Nilf {
+		t.PermissionSwitch()
+	}
+
+	t.Pm.Instr = Instr.Move
 	t.Pm.IDs = t.Players[t.Pm.ActPlr].GetIDsHand()
-	t.Players[t.Pm.ActPlr].Conn.Mut.Lock()
-	t.Players[t.Pm.ActPlr].Conn.WriteJSON("Game is running")
-	t.Players[t.Pm.ActPlr].Conn.WriteJSON(models.ResponseData{Instr: Instr.Move, Data: t.Pm.IDs})
-	t.Players[t.Pm.ActPlr].Conn.Mut.Unlock()
-	t.Players[t.Pm.PasPlr].Conn.Mut.Lock()
-	t.Players[t.Pm.PasPlr].Conn.WriteJSON("Game is running")
-	t.Players[t.Pm.PasPlr].Conn.WriteJSON(models.ResponseData{Instr: Instr.Wait})
-	t.Players[t.Pm.PasPlr].Conn.Mut.Unlock()
 }
 
-func (t *Table) StartStack(presets *map[string]models.PlayerPreset) {
+func (t *Table) GetStartCards(koef uint, preset models.PlayerPreset) []Card {
+	var (
+		all      []Card
+		newstack []Card
+	)
+
+	storage, err := os.OpenFile(fmt.Sprintf("./cards/%s.json", preset.Race), os.O_RDONLY, 0666)
+	if err != nil {
+		log.ServerLog(log.Error, "GetStartCards", err.Error())
+	}
+	defer storage.Close()
+
+	decoder := json.NewDecoder(storage)
+	err = decoder.Decode(&all)
+	if err != nil {
+		log.ServerLog(log.Error, "GetStartCards", err.Error())
+	}
+
+	for _, card := range all {
+		if slices.Contains(preset.Stack, card.ID) {
+			card.ID += koef * 100
+			newstack = append(newstack, card)
+		}
+	}
+
+	return newstack
+}
+
+func (t *Table) StartStack() {
 	for i := range t.ActiveCards {
-		t.ActiveCards[i].Score = t.ActiveCards[i].Cost
 		switch {
 		case t.ActiveCards[i].Role == "leader":
 			{
@@ -116,32 +164,10 @@ func (pf *PlayerField) StartHand() {
 		}
 	}
 
-	sort.SliceStable(pf.Hand,
-		func(i, j int) bool { return pf.Hand[i].Score < pf.Hand[j].Score })
-}
-
-func (pf *PlayerField) GetStartCards(koef uint, preset []uint, source string) []Card {
-	var (
-		all      []Card
-		newstack []Card
+	sort.SliceStable(
+		pf.Hand,
+		func(i, j int) bool {
+			return pf.Hand[i].Score < pf.Hand[j].Score
+		},
 	)
-	storage, err := os.OpenFile(source, os.O_RDONLY, 0666)
-	if err != nil {
-		log.ServerLog(log.Error, "GetStartCards", err.Error())
-	}
-	defer storage.Close()
-
-	decoder := json.NewDecoder(storage)
-	err = decoder.Decode(&all)
-	if err != nil {
-		log.ServerLog(log.Error, "GetStartCards", err.Error())
-	}
-
-	for _, card := range all {
-		if slices.Contains(preset, card.ID) {
-			card.ID += koef
-			newstack = append(newstack, card)
-		}
-	}
-	return newstack
 }
