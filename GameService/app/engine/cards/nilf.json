@@ -12,11 +12,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "weather-rain",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "weather-rain",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EmhyrVarEmreis",
@@ -31,11 +33,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": true,
-"leaderbonus": "skill-restriction",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "skill-restriction",
+"squad": ""
+}
 },
 {
 "name": "EmhyrVarEmreis",
@@ -50,11 +54,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EmhyrVarEmreis",
@@ -69,11 +75,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EmhyrVarEmreis",
@@ -88,11 +96,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Albrich",
@@ -107,11 +117,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "AssireVarAnahid",
@@ -126,11 +138,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "BlackInfantryArcher1",
@@ -145,11 +159,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "BlackInfantryArcher2",
@@ -164,11 +180,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "CahirMawrDyffryn",
@@ -183,11 +201,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Cynthia",
@@ -202,11 +222,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EtolianAuxiliaryArcher1",
@@ -221,11 +243,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EtolianAuxiliaryArcher2",
@@ -240,11 +264,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "FringillaVigo",
@@ -259,11 +285,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "HeavyZerrikanianFireScorpion",
@@ -278,11 +306,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "ImperaBrigadeGuard1",
@@ -297,11 +327,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "ImperaBrigade",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "impera-brigade"
+}
 },
 {
 "name": "ImperaBrigadeGuard2",
@@ -316,11 +348,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "ImperaBrigade",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "impera-brigade"
+}
 },
 {
 "name": "ImperaBrigadeGuard3",
@@ -335,11 +369,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "ImperaBrigade",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "impera-brigade"
+}
 },
 {
 "name": "ImperaBrigadeGuard4",
@@ -354,11 +390,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "ImperaBrigade",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "impera-brigade"
+}
 },
 {
 "name": "LethoOfGulet",
@@ -373,11 +411,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "MennoCoehoorn",
@@ -392,11 +432,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Morteisen",
@@ -411,11 +453,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "MorvranVoorhis",
@@ -430,11 +474,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "NausicaaCavalryRider1",
@@ -449,11 +495,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "NausicaaCavalry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "nausicaa-cavalry"
+}
 },
 {
 "name": "NausicaaCavalryRider2",
@@ -468,11 +516,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "NausicaaCavalry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "nausicaa-cavalry"
+}
 },
 {
 "name": "NausicaaCavalryRider3",
@@ -487,11 +537,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "NausicaaCavalry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "nausicaa-cavalry"
+}
 },
 {
 "name": "Puttkammer",
@@ -506,11 +558,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Rainfarn",
@@ -525,11 +579,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "RenualdAepMatsen",
@@ -544,11 +600,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "RottenMangonel",
@@ -563,11 +621,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "ShilardFitzOesterlen",
@@ -582,11 +642,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SiegeEngineer",
@@ -601,11 +663,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "StefanSkellen",
@@ -620,11 +684,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Sweers",
@@ -639,11 +705,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "TiborEggebracht",
@@ -658,11 +726,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Vanhemar",
@@ -677,11 +747,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "VattierDeRideaux",
@@ -696,11 +768,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Vreemde",
@@ -715,11 +789,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "YoungEmissary1",
@@ -734,11 +810,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Emissary",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "emissary"
+}
 },
 {
 "name": "YoungEmissary2",
@@ -753,11 +831,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Emissary",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "emissary"
+}
 },
 {
 "name": "ZerrikanianFireScorpion",
@@ -772,10 +852,12 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 }
 ]

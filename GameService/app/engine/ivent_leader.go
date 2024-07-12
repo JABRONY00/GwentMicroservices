@@ -3,7 +3,7 @@ package engine
 import "errors"
 
 func (t *Table) LeaderWeather() error {
-	switch t.Players[t.Pm.ActPlr].LeaderCard.LeaderBonus {
+	switch t.Players[t.Pm.ActPlr].LeaderCard.Bonuses[Bonus.LeaderAct] {
 	case Weather.Sun:
 		{
 			if !(t.WeatherFlags.Frost || t.WeatherFlags.Fog || t.WeatherFlags.Rain) {

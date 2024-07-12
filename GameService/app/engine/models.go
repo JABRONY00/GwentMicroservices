@@ -78,15 +78,7 @@ type Card struct {
 	Role        string          `json:"role"`
 	Description string          `json:"description"`
 	TargetField map[string]bool `json:"targetfield"`
-	CardBonus
-}
-
-type CardBonus struct {
-	Passive     bool   `json:"passive"`
-	LeaderBonus string `json:"leaderbonus"`
-	Squad       string `json:"squad"`
-	Horn        bool   `json:"horn"`
-	Boost       bool   `json:"boost"`
+	Bonuses     map[string]string
 }
 
 type TableShort struct {

@@ -57,6 +57,14 @@ type instruction struct {
 	Wait      string
 }
 
+type bonus struct {
+	Boost     string
+	Horn      string
+	LeaderAct string
+	LeaderPas string
+	Squad     string
+}
+
 var Instr = instruction{
 	ForbMove:  "forbidden-move",
 	HealCard:  "heal-card",
@@ -112,4 +120,12 @@ var Race = race{
 	Nilf: "nilf",
 	Sctl: "sctl",
 	Mstr: "mstr",
+}
+
+var Bonus = bonus{
+	Boost:     "boost",
+	Horn:      "horn",
+	LeaderAct: "leader-act",
+	LeaderPas: "leader-pas",
+	Squad:     "squad",
 }

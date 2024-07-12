@@ -63,7 +63,7 @@ func (t *Table) LeaderBonusActive(cardID uint) error { ///Expected
 	}
 	card := t.Players[t.Pm.ActPlr].LeaderCard
 	var err error
-	switch card.CardBonus.LeaderBonus {
+	switch card.Bonuses[Bonus.LeaderAct] {
 	case Weather.Sun:
 		fallthrough
 	case Weather.Frost:
@@ -117,50 +117,6 @@ func (t *Table) LeaderBonusActive(cardID uint) error { ///Expected
 		}
 	}
 
-	return err
-}
-
-func (t *Table) PutCard(cardID uint, targetfield string, targetID uint) error {
-	card, err := t.Players[t.Pm.ActPlr].DeleteCardFromHand(cardID)
-	switch {
-	case err != nil:
-		fallthrough
-	case !card.TargetField[targetfield]:
-		{
-			t.Players[t.Pm.ActPlr].PutCardToHand(card)
-			return errors.New(Instr.ForbMove)
-		}
-	}
-	switch card.Role {
-	case Role.Weather: // Complete
-		{
-			err = t.PutWeatherCard(card)
-		}
-	case Role.Decoy:
-		{
-			err = t.PutDecoyCard(card, targetfield, targetID)
-		}
-	case Role.Spy: // Complete
-		{
-			err = t.PutSpyCard(card, targetfield)
-		}
-	case Role.Executor: // Complete
-		{
-			err = t.PutExecutorCard(card, targetfield)
-		}
-	case Role.Execution: // ! Complete
-		{
-			err = t.PutExecutionCard(card)
-		}
-	case Role.Healer: //Expected
-		{
-			err = t.PutHealerCard(card, targetfield)
-		}
-	default: // Complete
-		{
-			err = t.PutDefaultCard(card, targetfield)
-		}
-	}
 	return err
 }
 

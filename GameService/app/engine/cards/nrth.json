@@ -12,11 +12,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "weather-fog",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "weather-fog",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Foltest",
@@ -31,11 +33,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "weather-clear",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "weather-clear",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Foltest",
@@ -50,11 +54,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "horn-siege",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "horn-siege",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Foltest",
@@ -69,11 +75,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "kill-siege",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "kill-siege",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Foltest",
@@ -88,11 +96,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "kill-distant",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "kill-distant",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Ballista1",
@@ -107,11 +117,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Ballista2",
@@ -126,11 +138,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "BlueStripesCommando1",
@@ -145,11 +159,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "BlueStripes",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "blue-stripes"
+}
 },
 {
 "name": "BlueStripesCommando2",
@@ -164,11 +180,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "BlueStripes",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "blue-stripes"
+}
 },
 {
 "name": "BlueStripesCommando3",
@@ -183,11 +201,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "BlueStripes",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "blue-stripes"
+}
 },
 {
 "name": "Catapult1",
@@ -202,11 +222,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Catapult",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "catapult"
+}
 },
 {
 "name": "Catapult2",
@@ -221,11 +243,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Catapult",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "catapult"
+}
 },
 {
 "name": "CrinfridReavers1",
@@ -240,11 +264,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "reavers",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "reavers"
+}
 },
 {
 "name": "CrinfridReavers2",
@@ -259,11 +285,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "reavers",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "reavers"
+}
 },
 {
 "name": "CrinfridReavers3",
@@ -278,11 +306,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "reavers",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "reavers"
+}
 },
 {
 "name": "Dethmold",
@@ -297,11 +327,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "DunBannerMedic",
@@ -316,11 +348,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "EsteradThyssen",
@@ -335,11 +369,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "JohnNatalis",
@@ -354,11 +390,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "KaedweniSiegeExpert1",
@@ -373,11 +411,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": true
+"bonuses": {
+"boost": "y",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "KaedweniSiegeExpert2",
@@ -392,11 +432,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": true
+"bonuses": {
+"boost": "y",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "KaedweniSiegeExpert3",
@@ -411,11 +453,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": true
+"bonuses": {
+"boost": "y",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "KeiraMetz",
@@ -430,11 +474,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "PhilippaEilhart",
@@ -449,11 +495,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "PoorFuckingInfantry1",
@@ -468,11 +516,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Infantry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "infantry"
+}
 },
 {
 "name": "PoorFuckingInfantry2",
@@ -487,11 +537,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Infantry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "infantry"
+}
 },
 {
 "name": "PoorFuckingInfantry3",
@@ -506,11 +558,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "Infantry",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": "infantry"
+}
 },
 {
 "name": "PrinceStennis",
@@ -525,11 +579,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "RedanianFootSoldier1",
@@ -544,11 +600,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "RedanianFootSoldier2",
@@ -563,11 +621,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SabrinaGlevissig",
@@ -582,11 +642,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SheldonSkaggs",
@@ -601,11 +663,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SiegeTower",
@@ -620,11 +684,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SiegfriedOfDenesle",
@@ -639,11 +705,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SigismundDijkstra",
@@ -658,11 +726,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "SileDeTanserville",
@@ -677,11 +747,13 @@
 "distant-field": true,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Thaler",
@@ -696,11 +768,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Trebuchet1",
@@ -715,11 +789,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Trebuchet2",
@@ -734,11 +810,13 @@
 "distant-field": false,
 "siege-field": true
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "VernonRoche",
@@ -753,11 +831,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "Ves",
@@ -772,11 +852,13 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 },
 {
 "name": "YarpenZigrin",
@@ -791,10 +873,12 @@
 "distant-field": false,
 "siege-field": false
 },
-"passive": false,
-"leaderbonus": "",
-"squad": "",
-"horn": false,
-"boost": false
+"bonuses": {
+"boost": "",
+"horn": "",
+"leader-act": "",
+"leader-pas": "",
+"squad": ""
+}
 }
 ]

@@ -178,19 +178,19 @@ func (gf *GameField) GameFieldBonusCounter(wg *sync.WaitGroup, weather bool) {
 	}
 
 	for i := range gf.CardField {
-		if gf.CardField[i].CardBonus.Squad != "" {
-			koef, ok := gf.ActiveBonuses.Squads[gf.CardField[i].Squad]
+		if gf.CardField[i].Bonuses[Bonus.Squad] != "" {
+			koef, ok := gf.ActiveBonuses.Squads[gf.CardField[i].Bonuses[Bonus.Squad]]
 			if ok {
-				gf.ActiveBonuses.Squads[gf.CardField[i].Squad] = koef + 1
+				gf.ActiveBonuses.Squads[gf.CardField[i].Bonuses[Bonus.Squad]] = koef + 1
 			} else {
-				gf.ActiveBonuses.Squads[gf.CardField[i].Squad] = 1
+				gf.ActiveBonuses.Squads[gf.CardField[i].Bonuses[Bonus.Squad]] = 1
 			}
 
 		}
-		if gf.CardField[i].CardBonus.Horn {
+		if gf.CardField[i].Bonuses[Bonus.Squad] != "" {
 			gf.ActiveBonuses.Horn++
 		}
-		if gf.CardField[i].CardBonus.Boost {
+		if gf.CardField[i].Bonuses[Bonus.Boost] != "" {
 			gf.ActiveBonuses.Boost++
 		}
 	}
@@ -220,19 +220,19 @@ func (gf *GameField) GameFieldScoreCounter(wg *sync.WaitGroup) uint {
 					gf.Score += gf.CardField[i].Score
 					continue
 				}
-				if gf.CardField[i].CardBonus.Squad != "" {
-					squadKoef = int(gf.ActiveBonuses.Squads[gf.CardField[i].CardBonus.Squad])
+				if gf.CardField[i].Bonuses[Bonus.Squad] != "" {
+					squadKoef = int(gf.ActiveBonuses.Squads[gf.CardField[i].Bonuses[Bonus.Squad]])
 				}
 				if gf.CardField[i].Cost == 0 && gf.ActiveBonuses.Weather == 1 {
 					weatherfix = 1
 				}
-				if gf.CardField[i].CardBonus.Horn && gf.HornField == nil && gf.ActiveBonuses.Horn < 2 {
+				if gf.CardField[i].Bonuses[Bonus.Horn] != "" && gf.HornField == nil && gf.ActiveBonuses.Horn < 2 {
 					hornfix = 1
 				}
 				if hornKoef > 1 {
 					hornKoef = 1
 				}
-				if gf.CardField[i].CardBonus.Boost {
+				if gf.CardField[i].Bonuses[Bonus.Boost] != "" {
 					boostfix = 1
 				} else {
 					boostfix = 0
@@ -484,14 +484,14 @@ func (pf *PlayerField) GetIDsGrave(forHeal bool) []uint {
 func (pf *PlayerField) GetIDsLeaderWeather() []uint {
 	var returnIDs []uint
 	for _, card := range pf.Stack {
-		switch pf.LeaderCard.LeaderBonus {
+		switch pf.LeaderCard.Bonuses[Bonus.LeaderAct] {
 		case Weather.Frost:
 			fallthrough
 		case Weather.Fog:
 			fallthrough
 		case Weather.Rain:
 			{
-				if card.Name == pf.LeaderCard.LeaderBonus {
+				if card.Name == pf.LeaderCard.Bonuses[Bonus.LeaderAct] {
 					returnIDs = append(returnIDs, card.ID)
 					break
 				}
