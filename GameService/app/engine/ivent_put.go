@@ -6,13 +6,13 @@ import (
 )
 
 func (t *Table) PutCard(cardID uint, targetfield string, targetID uint) error {
-	card, err := t.Players[t.Pm.ActPlr].DeleteCardFromHand(cardID)
+	card := t.Players[t.Pm.ActPlr].PickCardFromHand(cardID)
+	var err error
 	switch {
-	case err != nil:
+	case card == nil:
 		fallthrough
 	case !card.TargetField[targetfield]:
 		{
-			t.Players[t.Pm.ActPlr].PutCardToHand(card)
 			return errors.New(Instr.ForbMove)
 		}
 	}
@@ -45,6 +45,9 @@ func (t *Table) PutCard(cardID uint, targetfield string, targetID uint) error {
 		{
 			err = t.PutDefaultCard(card, targetfield)
 		}
+	}
+	if err == nil {
+		t.Players[t.Pm.ActPlr].DeleteCardFromHand(targetID)
 	}
 	return err
 }
@@ -127,13 +130,13 @@ func (t *Table) PutDefaultCard(card *Card, targetfield string) error {
 }
 
 func (t *Table) PutDecoyCard(card *Card, targetfield string, targetID uint) error {
-	t.PutDefaultCard(card, targetfield)
+
 	if targetID != 0 {
-		card, err := t.Players[t.Pm.ActPlr].Fields[targetfield].DeleteCardFromField(targetID)
-		if err != nil {
-			return errors.New(Instr.ForbMove)
-		}
+		exchanged, index := t.Players[t.Pm.ActPlr].Fields[targetfield].PickCardFromField(targetID)
+
 		switch {
+		case exchanged == nil:
+			fallthrough
 		case card.Rareness:
 			fallthrough
 		case card.Role == Role.Decoy:
@@ -142,8 +145,13 @@ func (t *Table) PutDecoyCard(card *Card, targetfield string, targetID uint) erro
 				return errors.New(Instr.ForbMove)
 			}
 		}
-		t.Players[t.Pm.ActPlr].PutCardToHand(card)
+
+		t.Players[t.Pm.ActPlr].PutCardToHand(exchanged)
+		t.Players[t.Pm.ActPlr].Fields[targetfield].CardField = slices.Replace(t.Players[t.Pm.ActPlr].Fields[targetfield].CardField, index, index+1, card)
+	} else {
+		t.PutDefaultCard(card, targetfield)
 	}
+
 	t.Pm.Instr = Instr.PmSwitch
 	return nil
 }

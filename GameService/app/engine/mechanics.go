@@ -187,7 +187,7 @@ func (gf *GameField) GameFieldBonusCounter(wg *sync.WaitGroup, weather bool) {
 			}
 
 		}
-		if gf.CardField[i].Bonuses[Bonus.Squad] != "" {
+		if gf.CardField[i].Bonuses[Bonus.Horn] != "" {
 			gf.ActiveBonuses.Horn++
 		}
 		if gf.CardField[i].Bonuses[Bonus.Boost] != "" {
@@ -303,15 +303,24 @@ func (pf *PlayerField) PutCardToHand(card *Card) {
 	}
 }
 
-func (pf *PlayerField) DeleteCardFromHand(targetID uint) (*Card, error) {
-	for i, card := range pf.Hand {
-		if card.ID == targetID {
-			pf.Hand = slices.Delete(pf.Hand, i, i+1)
-			pf.Hand = slices.Clip(pf.Hand)
-			return card, nil
+func (pf *PlayerField) PickCardFromHand(targetID uint) *Card {
+	for i := range pf.Hand {
+		if pf.Hand[i].ID == targetID {
+			return pf.Hand[i]
 		}
 	}
-	return nil, errors.New(Instr.ForbMove)
+	return nil
+}
+
+func (pf *PlayerField) DeleteCardFromHand(targetID uint) error {
+	for i := range pf.Hand {
+		if pf.Hand[i].ID == targetID {
+			pf.Hand = slices.Delete(pf.Hand, i, i+1)
+			pf.Hand = slices.Clip(pf.Hand)
+			return nil
+		}
+	}
+	return errors.New(Instr.ForbMove)
 }
 
 func (pf *PlayerField) PutCardOnWeatherField(card *Card) {
@@ -352,14 +361,23 @@ func (gf *GameField) PutCardOnField(card *Card) {
 	}
 }
 
-func (gf *GameField) DeleteCardFromField(targetID uint) (*Card, error) {
+func (gf *GameField) PickCardFromField(targetID uint) (*Card, int) {
+	for i := range gf.CardField {
+		if gf.CardField[i].ID == targetID {
+			return gf.CardField[i], i
+		}
+	}
+	return nil, -1
+}
+
+func (gf *GameField) DeleteCardFromField(targetID uint) error {
 	for i, card := range gf.CardField {
 		if card.ID == targetID {
 			gf.CardField = slices.Delete(gf.CardField, i, i+1)
-			return card, nil
+			return nil
 		}
 	}
-	return nil, errors.New(Instr.ForbMove)
+	return errors.New(Instr.ForbMove)
 }
 
 /////////////////
@@ -375,10 +393,8 @@ func (t *Table) Execution(targetfield string) error {
 		{
 			executionIDs := t.Players[t.Pm.PasPlr].Fields[targetfield].GetIDsExecution(false, 0)
 			for _, ID := range executionIDs {
-				card, err := t.Players[t.Pm.PasPlr].Fields[targetfield].DeleteCardFromField(ID)
-				if err != nil {
-					return err
-				}
+				card, _ := t.Players[t.Pm.PasPlr].Fields[targetfield].PickCardFromField(ID)
+				t.Players[t.Pm.PasPlr].Fields[targetfield].DeleteCardFromField(ID)
 				t.Players[t.Pm.PasPlr].PutCardToGrave(card)
 			}
 		}
@@ -397,33 +413,30 @@ func (t *Table) Execution(targetfield string) error {
 
 func (pf *PlayerField) GlobalExecution(maxScore uint) error {
 	var executionIDs []uint
+
 	if pf.AssaultField.MaxCardScore == maxScore {
 		executionIDs = pf.AssaultField.GetIDsExecution(true, maxScore)
 		for _, ID := range executionIDs {
-			card, err := pf.AssaultField.DeleteCardFromField(ID)
-			if err != nil {
-				return err
-			}
+			card, _ := pf.AssaultField.PickCardFromField(ID)
+			pf.AssaultField.DeleteCardFromField(ID)
 			pf.PutCardToGrave(card)
 		}
 	}
+
 	if pf.DistantField.MaxCardScore == maxScore {
 		executionIDs = pf.DistantField.GetIDsExecution(true, maxScore)
 		for _, ID := range executionIDs {
-			card, err := pf.DistantField.DeleteCardFromField(ID)
-			if err != nil {
-				return err
-			}
+			card, _ := pf.DistantField.PickCardFromField(ID)
+			pf.DistantField.DeleteCardFromField(ID)
 			pf.PutCardToGrave(card)
 		}
 	}
+
 	if pf.SiegeField.MaxCardScore == maxScore {
 		executionIDs = pf.SiegeField.GetIDsExecution(true, maxScore)
 		for _, ID := range executionIDs {
-			card, err := pf.SiegeField.DeleteCardFromField(ID)
-			if err != nil {
-				return err
-			}
+			card, _ := pf.SiegeField.PickCardFromField(ID)
+			pf.SiegeField.DeleteCardFromField(ID)
 			pf.PutCardToGrave(card)
 		}
 	}

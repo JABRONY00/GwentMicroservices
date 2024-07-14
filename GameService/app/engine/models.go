@@ -70,15 +70,15 @@ type GameField struct {
 }
 
 type Card struct {
-	Name        string          `json:"name"`
-	ID          uint            `json:"id"`
-	Rareness    bool            `json:"rareness"`
-	Cost        uint            `json:"cost"`
-	Score       uint            `json:"score"`
-	Role        string          `json:"role"`
-	Description string          `json:"description"`
-	TargetField map[string]bool `json:"targetfield"`
-	Bonuses     map[string]string
+	Name        string            `json:"name"`
+	ID          uint              `json:"id"`
+	Rareness    bool              `json:"rareness"`
+	Cost        uint              `json:"cost"`
+	Score       uint              `json:"score"`
+	Role        string            `json:"role"`
+	Description string            `json:"description"`
+	TargetField map[string]bool   `json:"targetfield"`
+	Bonuses     map[string]string `json:"bonuses"`
 }
 
 type TableShort struct {

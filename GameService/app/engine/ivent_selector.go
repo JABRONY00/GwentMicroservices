@@ -148,11 +148,14 @@ func (t *Table) HealCard(cardID uint, targetfield string) error {
 }
 
 func (t *Table) TossCard(cardID uint) error {
-	card, err := t.Players[t.Pm.ActPlr].DeleteCardFromHand(cardID)
-	if err != nil {
-		return err
+	card := t.Players[t.Pm.ActPlr].PickCardFromHand(cardID)
+	if card == nil {
+		return errors.New(Instr.ForbMove)
 	}
+
 	t.Players[t.Pm.ActPlr].PutCardToGrave(card)
+	t.Players[t.Pm.ActPlr].DeleteCardFromHand(card.ID)
+
 	switch {
 	case t.Pm.Instr == Instr.Toss1:
 		{
