@@ -101,12 +101,19 @@ func (t *Table) TableScoreCounter() {
 
 	t.MaxCardScore = 0
 
-	twg := &sync.WaitGroup{}
-	twg.Add(2)
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
 
-	go t.Players[t.Pm.ActPlr].PlayerFieldScoreCounter(twg, t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
-	go t.Players[t.Pm.PasPlr].PlayerFieldScoreCounter(twg, t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
-	twg.Wait()
+	go func() {
+		defer wg.Done()
+		t.Players[t.Pm.ActPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	}()
+	go func() {
+		defer wg.Done()
+		t.Players[t.Pm.PasPlr].PlayerFieldScoreCounter(t.WeatherFlags.Frost, t.WeatherFlags.Fog, t.WeatherFlags.Rain)
+	}()
+
+	wg.Wait()
 
 	if t.Players[t.Pm.ActPlr].MaxCardScore > t.Players[t.Pm.PasPlr].MaxCardScore {
 		t.MaxCardScore = t.Players[t.Pm.ActPlr].MaxCardScore
@@ -136,21 +143,42 @@ func (t *Table) TableScoreCounter() {
 	}
 }
 
-func (pf *PlayerField) PlayerFieldScoreCounter(twg *sync.WaitGroup, frost bool, fog bool, rain bool) {
-	defer twg.Done()
+func (pf *PlayerField) PlayerFieldScoreCounter(frost bool, fog bool, rain bool) {
 
 	wg := &sync.WaitGroup{}
 	wg.Add(3)
-	go pf.Fields[Field.Assault].GameFieldBonusCounter(wg, frost)
-	go pf.Fields[Field.Distant].GameFieldBonusCounter(wg, fog)
-	go pf.Fields[Field.Siege].GameFieldBonusCounter(wg, rain)
+	go func() {
+		defer wg.Done()
+		pf.Fields[Field.Assault].GameFieldBonusCounter(frost)
+	}()
+	go func() {
+		defer wg.Done()
+		pf.Fields[Field.Distant].GameFieldBonusCounter(fog)
+	}()
+	go func() {
+		defer wg.Done()
+		pf.Fields[Field.Siege].GameFieldBonusCounter(rain)
+	}()
 	wg.Wait()
 
-	wg.Add(3)
-	pf.Score = pf.Fields[Field.Assault].GameFieldScoreCounter(wg)
-	pf.Score += pf.Fields[Field.Distant].GameFieldScoreCounter(wg)
-	pf.Score += pf.Fields[Field.Siege].GameFieldScoreCounter(wg)
-	wg.Wait()
+	pf.Score = 0
+	ch := make(chan uint, 3)
+
+	go func() {
+		ch <- pf.Fields[Field.Assault].GameFieldScoreCounter()
+	}()
+	go func() {
+		ch <- pf.Fields[Field.Distant].GameFieldScoreCounter()
+	}()
+	go func() {
+		ch <- pf.Fields[Field.Siege].GameFieldScoreCounter()
+	}()
+
+	pf.Score += <-ch
+	pf.Score += <-ch
+	pf.Score += <-ch
+
+	close(ch)
 
 	pf.MaxCardScore = pf.Fields[Field.Assault].MaxCardScore
 	if pf.MaxCardScore < pf.Fields[Field.Distant].MaxCardScore {
@@ -161,8 +189,7 @@ func (pf *PlayerField) PlayerFieldScoreCounter(twg *sync.WaitGroup, frost bool, 
 	}
 }
 
-func (gf *GameField) GameFieldBonusCounter(wg *sync.WaitGroup, weather bool) {
-	defer wg.Done()
+func (gf *GameField) GameFieldBonusCounter(weather bool) {
 
 	if weather {
 		gf.ActiveBonuses.Weather = 1
@@ -196,8 +223,7 @@ func (gf *GameField) GameFieldBonusCounter(wg *sync.WaitGroup, weather bool) {
 	}
 }
 
-func (gf *GameField) GameFieldScoreCounter(wg *sync.WaitGroup) uint {
-	defer wg.Done()
+func (gf *GameField) GameFieldScoreCounter() uint {
 
 	gf.MaxCardScore = 0
 	gf.Score = 0
@@ -259,9 +285,15 @@ func (gf *GameField) GameFieldScoreCounter(wg *sync.WaitGroup) uint {
 
 func (pf *PlayerField) PutRandCardFromStackToHand(number uint) {
 	for number != 0 {
-		if len(pf.Stack) < 1 {
-			return
+		switch {
+		case pf.Stack == nil:
+			fallthrough
+		case len(pf.Stack) < 1:
+			{
+				return
+			}
 		}
+
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		index := r.Intn(len(pf.Stack))
 		pf.Hand = append(pf.Hand, pf.Stack[index])
@@ -400,46 +432,67 @@ func (t *Table) Execution(targetfield string) error {
 		}
 	default: //Global Execution
 		{
+			twg := &sync.WaitGroup{}
 			if t.PlayerA.MaxCardScore == t.MaxCardScore {
-				t.PlayerA.GlobalExecution(t.MaxCardScore)
+				twg.Add(1)
+				go func() {
+					defer twg.Done()
+					t.PlayerA.GlobalExecution(t.MaxCardScore)
+				}()
 			}
 			if t.PlayerB.MaxCardScore == t.MaxCardScore {
-				t.PlayerB.GlobalExecution(t.MaxCardScore)
+				twg.Add(1)
+				go func() {
+					defer twg.Done()
+					t.PlayerB.GlobalExecution(t.MaxCardScore)
+				}()
 			}
+			twg.Wait()
 		}
 	}
 	return nil
 }
 
 func (pf *PlayerField) GlobalExecution(maxScore uint) error {
-	var executionIDs []uint
-
-	if pf.AssaultField.MaxCardScore == maxScore {
-		executionIDs = pf.AssaultField.GetIDsExecution(true, maxScore)
-		for _, ID := range executionIDs {
-			card, _ := pf.AssaultField.PickCardFromField(ID)
-			pf.AssaultField.DeleteCardFromField(ID)
-			pf.PutCardToGrave(card)
+	wg := &sync.WaitGroup{}
+	wg.Add(3)
+	go func() {
+		defer wg.Done()
+		if pf.AssaultField.MaxCardScore == maxScore {
+			executionIDs := pf.AssaultField.GetIDsExecution(true, maxScore)
+			for _, ID := range executionIDs {
+				card, _ := pf.AssaultField.PickCardFromField(ID)
+				pf.AssaultField.DeleteCardFromField(ID)
+				pf.PutCardToGrave(card)
+			}
 		}
-	}
+	}()
 
-	if pf.DistantField.MaxCardScore == maxScore {
-		executionIDs = pf.DistantField.GetIDsExecution(true, maxScore)
-		for _, ID := range executionIDs {
-			card, _ := pf.DistantField.PickCardFromField(ID)
-			pf.DistantField.DeleteCardFromField(ID)
-			pf.PutCardToGrave(card)
+	go func() {
+		defer wg.Done()
+		if pf.DistantField.MaxCardScore == maxScore {
+			executionIDs := pf.DistantField.GetIDsExecution(true, maxScore)
+			for _, ID := range executionIDs {
+				card, _ := pf.DistantField.PickCardFromField(ID)
+				pf.DistantField.DeleteCardFromField(ID)
+				pf.PutCardToGrave(card)
+			}
 		}
-	}
+	}()
 
-	if pf.SiegeField.MaxCardScore == maxScore {
-		executionIDs = pf.SiegeField.GetIDsExecution(true, maxScore)
-		for _, ID := range executionIDs {
-			card, _ := pf.SiegeField.PickCardFromField(ID)
-			pf.SiegeField.DeleteCardFromField(ID)
-			pf.PutCardToGrave(card)
+	go func() {
+		defer wg.Done()
+		if pf.SiegeField.MaxCardScore == maxScore {
+			executionIDs := pf.SiegeField.GetIDsExecution(true, maxScore)
+			for _, ID := range executionIDs {
+				card, _ := pf.SiegeField.PickCardFromField(ID)
+				pf.SiegeField.DeleteCardFromField(ID)
+				pf.PutCardToGrave(card)
+			}
 		}
-	}
+	}()
+
+	wg.Wait()
 	return nil
 }
 

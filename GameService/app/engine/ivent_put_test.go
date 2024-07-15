@@ -3,6 +3,7 @@ package engine_test
 import (
 	"GwentMicroservices/GameService/app/api/models"
 	"GwentMicroservices/GameService/app/engine"
+	"slices"
 	"testing"
 )
 
@@ -406,7 +407,7 @@ func getTestCards(idKoef uint) map[string]*engine.Card {
 			Cost:     2,
 			Score:    2,
 			Rareness: false,
-			Role:     "boost",
+			Role:     "",
 			Bonuses: map[string]string{
 				"boost":      "y",
 				"horn":       "",
@@ -426,7 +427,7 @@ func getTestCards(idKoef uint) map[string]*engine.Card {
 			Cost:     2,
 			Score:    2,
 			Rareness: false,
-			Role:     "boost",
+			Role:     "",
 			Bonuses: map[string]string{
 				"boost":      "y",
 				"horn":       "",
@@ -900,54 +901,74 @@ func getTestCards(idKoef uint) map[string]*engine.Card {
 				engine.Field.Siege:   true,
 			},
 		},
+		"agile": {
+			ID:       50 + (100 * idKoef),
+			Name:     "Agile",
+			Cost:     2,
+			Score:    2,
+			Rareness: false,
+			Role:     "",
+			Bonuses: map[string]string{
+				"boost":      "",
+				"horn":       "",
+				"leader-act": "",
+				"leader-pas": "",
+				"squad":      "",
+			},
+			TargetField: map[string]bool{
+				engine.Field.Assault: true,
+				engine.Field.Distant: true,
+				engine.Field.Siege:   false,
+			},
+		},
+		"agile2": {
+			ID:       51 + (100 * idKoef),
+			Name:     "Agile",
+			Cost:     2,
+			Score:    2,
+			Rareness: false,
+			Role:     "",
+			Bonuses: map[string]string{
+				"boost":      "",
+				"horn":       "",
+				"leader-act": "",
+				"leader-pas": "",
+				"squad":      "",
+			},
+			TargetField: map[string]bool{
+				engine.Field.Assault: true,
+				engine.Field.Distant: true,
+				engine.Field.Siege:   false,
+			},
+		},
+		"agile3": {
+			ID:       52 + (100 * idKoef),
+			Name:     "Agile",
+			Cost:     2,
+			Score:    2,
+			Rareness: false,
+			Role:     "",
+			Bonuses: map[string]string{
+				"boost":      "",
+				"horn":       "",
+				"leader-act": "",
+				"leader-pas": "",
+				"squad":      "",
+			},
+			TargetField: map[string]bool{
+				engine.Field.Assault: true,
+				engine.Field.Distant: true,
+				engine.Field.Siege:   false,
+			},
+		},
 	}
 
 	return testCards
 }
 
 func TestPutWeatherCard(t *testing.T) {
-	cards := []*engine.Card{
-		{
-			ID:   1,
-			Name: engine.Weather.Frost,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   2,
-			Name: engine.Weather.Frost,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   3,
-			Name: engine.Weather.Fog,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   4,
-			Name: engine.Weather.Fog,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   5,
-			Name: engine.Weather.Rain,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   6,
-			Name: engine.Weather.Rain,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   7,
-			Name: engine.Weather.Sun,
-			Role: engine.Role.Weather,
-		},
-		{
-			ID:   8,
-			Name: engine.Weather.Sun,
-			Role: engine.Role.Weather,
-		},
-	}
+	cardsA := getTestCards(1)
+	cardsB := getTestCards(2)
 
 	table := engine.NewTable(
 		&models.Client{Name: "testname1"},
@@ -957,121 +978,160 @@ func TestPutWeatherCard(t *testing.T) {
 	table.Pm.ActPlr = "testname1"
 	table.Pm.PasPlr = "testname2"
 
-	table.PutWeatherCard(cards[0])
-	table.PutWeatherCard(cards[2])
-	table.PutWeatherCard(cards[4])
-
-	if len(table.Players[table.Pm.ActPlr].WeatherField) != 3 {
-		t.Error("failed to put cards on weather field")
+	if table.WeatherFlags.Frost || table.WeatherFlags.Fog || table.WeatherFlags.Rain {
+		t.Error("initial flags condition is wrong")
+	}
+	if table.Players[table.Pm.ActPlr].Grave != nil || table.Players[table.Pm.PasPlr].Grave != nil {
+		t.Error("initial flags condition is wrong")
 	}
 
-	if !table.WeatherFlags.Frost ||
-		!table.WeatherFlags.Fog ||
-		!table.WeatherFlags.Rain {
-		t.Error("failed to switch the flags")
+	//////////////////
+
+	err := table.PutWeatherCard(cardsA["frost"])
+	if err != nil {
+		t.Errorf("%v", err)
 	}
+	if !table.WeatherFlags.Frost || table.WeatherFlags.Fog || table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if table.Players[table.Pm.ActPlr].WeatherField == nil {
+		t.Error("failed to put card on weather field")
+	}
+	if table.Players[table.Pm.PasPlr].WeatherField != nil {
+		t.Error("failed to put card on weather correctly field")
+	}
+	if table.Players[table.Pm.ActPlr].Grave != nil || table.Players[table.Pm.PasPlr].Grave != nil {
+		t.Error("somehow card appeared to be on grave field")
+	}
+	if table.Pm.Instr != engine.Instr.PmSwitch {
+		t.Error("failed to set instruction")
+	}
+
+	////////////////////////
+
+	err = table.PutWeatherCard(cardsA["rain"])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if !table.WeatherFlags.Frost || table.WeatherFlags.Fog || !table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if len(table.Players[table.Pm.ActPlr].WeatherField) != 2 {
+		t.Error("failed to put card on weather field")
+	}
+	if table.Players[table.Pm.PasPlr].WeatherField != nil {
+		t.Error("card apeared to be on the other side")
+	}
+	if table.Players[table.Pm.ActPlr].Grave != nil || table.Players[table.Pm.PasPlr].Grave != nil {
+		t.Error("somehow card appeared to be on grave field")
+	}
+
+	//////////////////////////
+
+	err = table.PutWeatherCard(cardsA["frost2"])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if !table.WeatherFlags.Frost || table.WeatherFlags.Fog || !table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if len(table.Players[table.Pm.ActPlr].WeatherField) != 2 {
+		t.Error("duplicating card on weather field")
+	}
+	if table.Players[table.Pm.PasPlr].WeatherField != nil {
+		t.Error("card apeared to be on the other side")
+	}
+	if table.Players[table.Pm.ActPlr].Grave == nil || table.Players[table.Pm.PasPlr].Grave != nil {
+		t.Error("failed to put duplicating card on grave field correctly")
+	}
+
+	//////////////////////////////
 
 	table.PermissionSwitch()
 
-	table.PutWeatherCard(cards[1])
-	table.PutWeatherCard(cards[3])
-	table.PutWeatherCard(cards[5])
-
-	if len(table.Players[table.Pm.ActPlr].WeatherField) != 3 {
-		t.Error("failed to put cards on weather field")
+	err = table.PutWeatherCard(cardsB["fog"])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if !table.WeatherFlags.Frost || !table.WeatherFlags.Fog || !table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if table.Players[table.Pm.ActPlr].WeatherField == nil {
+		t.Error("failed to put card on weather field")
+	}
+	if len(table.Players[table.Pm.PasPlr].WeatherField) != 2 {
+		t.Error("failed to put card on weather correctly field")
+	}
+	if table.Players[table.Pm.ActPlr].Grave != nil {
+		t.Error("somehow card appeared to be on grave field")
 	}
 
-	if len(table.Players[table.Pm.PasPlr].Grave) != 3 {
-		t.Error("failed to put cards to passive players grave field")
+	/////////////////////
+
+	err = table.PutWeatherCard(cardsB["rain"])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if !table.WeatherFlags.Frost || !table.WeatherFlags.Fog || !table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if len(table.Players[table.Pm.ActPlr].WeatherField) != 2 {
+		t.Error("failed to change duplicating enemy card")
+	}
+	if len(table.Players[table.Pm.PasPlr].WeatherField) != 1 {
+		t.Error("failed to delete duplicating card from enemy weather field")
+	}
+	if table.Players[table.Pm.ActPlr].Grave != nil {
+		t.Error("somehow duplicating card appeared on own grave field")
+	}
+	if len(table.Players[table.Pm.PasPlr].Grave) != 2 {
+		t.Error("failed to put duplicating card on enemy grave field")
 	}
 
-	if !table.WeatherFlags.Frost ||
-		!table.WeatherFlags.Fog ||
-		!table.WeatherFlags.Rain {
-		t.Error("failed to switch the flags")
-	}
+	/////////////////////
 
 	table.PermissionSwitch()
 
-	table.PutWeatherCard(cards[6])
-
-	if len(table.Players[table.Pm.ActPlr].WeatherField) != 0 &&
-		len(table.Players[table.Pm.PasPlr].WeatherField) != 0 {
-		t.Error("failed to clean weather field")
+	err = table.PutWeatherCard(cardsA["sun"])
+	if err != nil {
+		t.Errorf("%v", err)
 	}
-
+	if table.WeatherFlags.Frost || table.WeatherFlags.Fog || table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if table.Players[table.Pm.ActPlr].WeatherField != nil || table.Players[table.Pm.PasPlr].WeatherField != nil {
+		t.Error("failed clear weather fields")
+	}
 	if len(table.Players[table.Pm.ActPlr].Grave) != 4 {
-		t.Error("failed to put sun card to active players grave field")
+		t.Error("failed to put own cards to grave field correctly")
+	}
+	if len(table.Players[table.Pm.PasPlr].Grave) != 2 {
+		t.Error("failed to put enemy cards to grave field correctly")
 	}
 
-	if len(table.Players[table.Pm.PasPlr].Grave) != 3 {
-		t.Error("failed to put cards to passive players grave field")
+	///////////////////////////////
+
+	err = table.PutWeatherCard(cardsA["sun2"])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if table.WeatherFlags.Frost || table.WeatherFlags.Fog || table.WeatherFlags.Rain {
+		t.Error("failed to switch flag correctly")
+	}
+	if table.Players[table.Pm.ActPlr].WeatherField != nil || table.Players[table.Pm.PasPlr].WeatherField != nil {
+		t.Error("failed clear weather fields")
+	}
+	if len(table.Players[table.Pm.ActPlr].Grave) != 5 {
+		t.Error("failed to put own sun card to grave field correctly")
+	}
+	if len(table.Players[table.Pm.PasPlr].Grave) != 2 {
+		t.Error("failed to put enemy sun card to grave field correctly")
 	}
 
-	if table.WeatherFlags.Frost ||
-		table.WeatherFlags.Fog ||
-		table.WeatherFlags.Rain {
-		t.Error("failed to switch the flags")
-	}
-
-	table.PermissionSwitch()
-
-	table.PutWeatherCard(cards[7])
-
-	if len(table.Players[table.Pm.ActPlr].Grave) != 4 {
-		t.Error("failed to put sun card to active players grave field")
-	}
-
-	if len(table.Players[table.Pm.PasPlr].Grave) != 4 {
-		t.Error("something went wrong")
-	}
-
-	if table.WeatherFlags.Frost ||
-		table.WeatherFlags.Fog ||
-		table.WeatherFlags.Rain {
-		t.Error("failed to switch the flags")
-	}
 }
 
 func TestPutDefaultCard(t *testing.T) {
-	cards := []*engine.Card{
-		{
-			ID:   1,
-			Name: "1",
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: false,
-				engine.Field.Siege:   false,
-			},
-		},
-		{
-			ID:   2,
-			Name: "2",
-			TargetField: map[string]bool{
-				engine.Field.Assault: false,
-				engine.Field.Distant: true,
-				engine.Field.Siege:   false,
-			},
-		},
-		{
-			ID:   3,
-			Name: "3",
-			TargetField: map[string]bool{
-				engine.Field.Assault: false,
-				engine.Field.Distant: false,
-				engine.Field.Siege:   true,
-			},
-		},
-		{
-			ID:   4,
-			Name: "4",
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: false,
-				engine.Field.Siege:   false,
-			},
-		},
-	}
+	cards := getTestCards(1)
 
 	table := engine.NewTable(
 		&models.Client{Name: "testname1"},
@@ -1081,61 +1141,24 @@ func TestPutDefaultCard(t *testing.T) {
 	table.Pm.ActPlr = "testname1"
 	table.Pm.PasPlr = "testname2"
 
-	table.PutDefaultCard(cards[0], engine.Field.Assault)
+	table.PutDefaultCard(cards["defAssault"], engine.Field.Assault)
 
-	if table.Players[table.Pm.ActPlr].AssaultField.CardField[0] != cards[0] {
+	if table.Players[table.Pm.ActPlr].AssaultField.CardField[0] != cards["defAssault"] {
 		t.Error("failed to put card on field")
 	}
 
-	table.PutDefaultCard(cards[3], engine.Field.Assault)
+	table.PutDefaultCard(cards["defAssault"], engine.Field.Assault)
 
 	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 2 {
 		t.Error("failed to put second card on field")
 	}
+	if table.Pm.Instr != engine.Instr.PmSwitch {
+		t.Error("failed to set instruction")
+	}
 }
 
 func TestPutDecoyCard(t *testing.T) {
-	cards := []*engine.Card{
-		{
-			ID:   1,
-			Name: "1",
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: false,
-				engine.Field.Siege:   false,
-			},
-		},
-		{
-			ID:       2,
-			Name:     "Rare",
-			Rareness: true,
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: false,
-				engine.Field.Siege:   false,
-			},
-		},
-		{
-			ID:   3,
-			Name: "Decoy1",
-			Role: engine.Role.Decoy,
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: true,
-				engine.Field.Siege:   true,
-			},
-		},
-		{
-			ID:   4,
-			Name: "Decoy2",
-			Role: engine.Role.Decoy,
-			TargetField: map[string]bool{
-				engine.Field.Assault: true,
-				engine.Field.Distant: true,
-				engine.Field.Siege:   true,
-			},
-		},
-	}
+	cards := getTestCards(1)
 
 	table := engine.NewTable(
 		&models.Client{Name: "testname1"},
@@ -1145,11 +1168,187 @@ func TestPutDecoyCard(t *testing.T) {
 	table.Pm.ActPlr = "testname1"
 	table.Pm.PasPlr = "testname2"
 
-	table.Players[table.Pm.ActPlr].AssaultField.CardField = append(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards[:2]...)
+	table.Players[table.Pm.ActPlr].AssaultField.CardField = append(table.Players[table.Pm.ActPlr].AssaultField.CardField, []*engine.Card{
+		cards["defAssault"],
+		cards["defAssault2"],
+		cards["rareAssault"],
+	}...)
 
-	err := table.PutDecoyCard(cards[2], engine.Field.Assault, 2)
-	if err != nil {
-		t.Error("Rare card was exchanged")
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 3 || table.Players[table.Pm.ActPlr].Hand != nil {
+		t.Error("initial table condition is wrong")
 	}
-	t.Logf("")
+
+	///////////////////////////////////////////////////////
+
+	err := table.PutDecoyCard(cards["decoy"], engine.Field.Assault, cards["defAssault"].ID)
+	if err != nil {
+		t.Errorf("non existing error:%v", err)
+	}
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 3 {
+		t.Error("card field contains wrong quantity of cards")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["defAssault"]) ||
+		!slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy"]) {
+		t.Error("card field modified incorrectly")
+	}
+	switch {
+	case table.Players[table.Pm.ActPlr].Hand == nil:
+		{
+			t.Error("no cards was put to hand")
+		}
+	case table.Players[table.Pm.ActPlr].Hand[0].ID != cards["defAssault"].ID:
+		{
+			t.Error("wrong card exchanged")
+		}
+	}
+	if table.Pm.Instr != engine.Instr.PmSwitch {
+		t.Error("failed to set instruction")
+	}
+
+	//////////////////////////////////////////////////
+
+	err = table.PutDecoyCard(cards["decoy2"], engine.Field.Assault, cards["rareAssault"].ID)
+	if err.Error() != engine.Instr.ForbMove {
+		t.Error("failed to form error while exchanging rare card")
+	}
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 3 ||
+		slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy2"]) ||
+		!slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["rareAssault"]) {
+		t.Error("card field was changed besides an error")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["rareAssault"]) {
+		t.Error("card exchanged besides an error")
+	}
+
+	////////////////////////////////////
+
+	err = table.PutDecoyCard(cards["decoy2"], engine.Field.Assault, cards["decoy"].ID)
+	if err.Error() != engine.Instr.ForbMove {
+		t.Error("failed to form error while exchanging decoy card")
+	}
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 3 ||
+		slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy2"]) ||
+		!slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy"]) {
+		t.Error("card field was changed besides an error")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["decoy"]) {
+		t.Error("card exchanged besides an error")
+	}
+
+	///////////////////////////////////////////////////////////////////
+
+	err = table.PutDecoyCard(cards["decoy2"], engine.Field.Assault, cards["defSiege"].ID)
+	if err.Error() != engine.Instr.ForbMove {
+		t.Error("failed to form error while exchanging non existing card")
+	}
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 3 ||
+		slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy2"]) {
+		t.Error("card field was changed besides an error")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["defaultSiege"]) {
+		t.Error("card exchanged besides an error")
+	}
+
+	/////////////////////////////////////////////
+
+	err = table.PutDecoyCard(cards["decoy2"], engine.Field.Assault, 0)
+	if err != nil {
+		t.Error("non existing error")
+	}
+	if len(table.Players[table.Pm.ActPlr].AssaultField.CardField) != 4 ||
+		!slices.Contains(table.Players[table.Pm.ActPlr].AssaultField.CardField, cards["decoy2"]) {
+		t.Error("card was not put on the field")
+	}
+	if len(table.Players[table.Pm.ActPlr].Hand) != 1 {
+		t.Error("wrong cards quantity in hand")
+	}
 }
+
+func TestPutSpyCard(t *testing.T) {
+	cards := getTestCards(1)
+
+	table := engine.NewTable(
+		&models.Client{Name: "testname1"},
+		&models.Client{Name: "testname2"},
+	)
+
+	table.Pm.ActPlr = "testname1"
+	table.Pm.PasPlr = "testname2"
+
+	table.PutSpyCard(cards["spy"], engine.Field.Assault)
+	if table.Players[table.Pm.ActPlr].Hand != nil {
+		t.Error("non existing cards appeared in own hand")
+	}
+	if table.Players[table.Pm.PasPlr].Hand != nil {
+		t.Error("non existing cards appeared in enemy hand")
+	}
+	if !slices.Contains(table.Players[table.Pm.PasPlr].AssaultField.CardField, cards["spy"]) {
+		t.Error("failed to put spy card on enemy card field")
+	}
+
+	table.Players[table.Pm.PasPlr].AssaultField.CardField = nil
+
+	//////////////////////////
+
+	table.Players[table.Pm.ActPlr].Stack = append(table.Players[table.Pm.ActPlr].Stack, cards["defAssault"])
+
+	table.PutSpyCard(cards["spy"], engine.Field.Assault)
+	if !slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["defAssault"]) {
+		t.Error("failed to put correct card to hand")
+	}
+	if table.Players[table.Pm.PasPlr].Hand != nil {
+		t.Error("card appeared in enemy hand")
+	}
+	if !slices.Contains(table.Players[table.Pm.PasPlr].AssaultField.CardField, cards["spy"]) {
+		t.Error("failed to put spy card on enemy card field")
+	}
+
+	table.Players[table.Pm.PasPlr].AssaultField.CardField = nil
+	table.Players[table.Pm.ActPlr].Hand = nil
+	table.Players[table.Pm.ActPlr].Stack = nil
+
+	////////////////////////
+
+	table.Players[table.Pm.ActPlr].Stack = append(table.Players[table.Pm.ActPlr].Stack, []*engine.Card{
+		cards["defAssault"],
+		cards["defAssault2"],
+		cards["rareAssault"],
+	}...)
+
+	table.PutSpyCard(cards["spy"], engine.Field.Assault)
+	if len(table.Players[table.Pm.ActPlr].Hand) != 2 {
+		t.Error("failed to put cards to hand")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["defAssault"]) &&
+		slices.Contains(table.Players[table.Pm.ActPlr].Stack, cards["defAssault"]) {
+		t.Error("failed to modify player field correctly")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["defAssault2"]) &&
+		slices.Contains(table.Players[table.Pm.ActPlr].Stack, cards["defAssault2"]) {
+		t.Error("failed to modify player field correctly")
+	}
+	if slices.Contains(table.Players[table.Pm.ActPlr].Hand, cards["rareSiege"]) &&
+		slices.Contains(table.Players[table.Pm.ActPlr].Stack, cards["rareSiege"]) {
+		t.Error("failed to modify player field correctly")
+	}
+	if table.Players[table.Pm.PasPlr].Hand != nil {
+		t.Error("cards appeared in enemy hand")
+	}
+	if !slices.Contains(table.Players[table.Pm.PasPlr].AssaultField.CardField, cards["spy"]) {
+		t.Error("failed to put spy card on enemy card field")
+	}
+}
+
+/*func TestPutExecutionCard(t *testing.T) {
+
+	cardsA := getTestCards(1)
+	cardsB := getTestCards(2)
+
+	table := engine.NewTable(
+		&models.Client{Name: "testname1"},
+		&models.Client{Name: "testname2"},
+	)
+
+	table.Pm.ActPlr = "testname1"
+	table.Pm.PasPlr = "testname2"
+}*/
